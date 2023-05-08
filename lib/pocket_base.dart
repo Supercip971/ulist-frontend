@@ -11,9 +11,9 @@ import 'user.dart';
 
 const pb_url = ("http://127.0.0.1:8090");
 
-class PocketBaseController {
-  PocketBase pb = PocketBase(pb_url);
+PocketBase pb = PocketBase(pb_url);
 
+class PocketBaseController {
   var secureStorage = getIt<FlutterSecureStorage>();
 
   var _loaded = false;

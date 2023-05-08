@@ -33,6 +33,10 @@ class _ListPage extends State<ListPage> {
   ShoppingList self = ShoppingList();
   List<ShoppingListEntry> entries = [];
 
+  TextEditingController addedName = TextEditingController();
+
+  ShoppingListEntry current_being_edited = ShoppingListEntry();
+
   bool loaded = false;
 
   Future<bool> upload_change(int place) async {
@@ -64,8 +68,41 @@ class _ListPage extends State<ListPage> {
     return true;
   }
 
-  Widget entry_widget(ShoppingListEntry entry, int place) {
+  Widget add_entry_page(ShoppingListEntry entry) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Add entry"),
+      ),
+      body: Column(
+        children: [
+          Text("Add entry"),
+          TextField(
+            controller: TextEditingController(text: entry.name),
+            onChanged: (value) {
+              entry.name = value;
+            },
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context, entry);
+            },
+            child: Text("Add"),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget entry_widget(
+      BuildContext context, ShoppingListEntry entry, int place) {
+    TextStyle default_style = Theme.of(context).textTheme.bodyLarge!.copyWith(
+          overflow: TextOverflow.ellipsis,
+        );
+
+    TextStyle checked_style = default_style.copyWith(
+        decoration: TextDecoration.lineThrough, color: Colors.grey);
     return Row(
+      mainAxisSize: MainAxisSize.max,
       children: [
         Checkbox(
           value: entry.checked,
@@ -76,8 +113,49 @@ class _ListPage extends State<ListPage> {
             });
           },
         ),
-        Text(entry.name),
+        Flexible(
+          child: Container(
+              child: Text(entry.name,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  softWrap: true,
+                  style: ((entry.checked) ? checked_style : default_style))),
+        )
       ],
+    );
+  }
+
+  void openDialog(BuildContext context) {
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (context) => SizedBox(
+          height: 400,
+          child: Dialog(
+              child: pad(Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(mainAxisSize: MainAxisSize.min, children: [
+                pad(
+                  Text("Add entry",
+                      style: Theme.of(context).textTheme.headlineLarge),
+                )
+              ]),
+              pad(TextField(
+                controller: TextEditingController(text: ""),
+                onChanged: (value) {},
+                decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: "Name",
+                    icon: Icon(Icons.add)),
+              )),
+              pad(ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text("Add"),
+              ))
+            ],
+          )))),
     );
   }
 
@@ -86,33 +164,71 @@ class _ListPage extends State<ListPage> {
     var pbc = getIt<PocketBaseController>();
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.name),
-      ),
-      body: FutureBuilder<bool>(
-        future: load_data(false),
-        builder: (context, snapshot) {
-          if (snapshot.hasData) {
-            List<Widget> widget_entries = [];
-            for (var item in entries) {
-              widget_entries.add(entry_widget(item, entries.indexOf(item)));
-            }
-            return Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  Text("${self.name}"),
-                  Column(
-                    children: widget_entries,
-                  )
-                ]);
-          } else if (snapshot.hasError) {
-            return Text("${snapshot.error}");
-          }
+        appBar: AppBar(
+          title: Text(widget.name),
+        ),
+        body: Center(
+            heightFactor: 1.0,
+            child: Column(children: [
+              Flexible(
+                child: FutureBuilder<bool>(
+                  future: load_data(true),
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData) {
+                      List<Widget> widget_entries = [];
+                      for (var item in entries) {
+                        widget_entries.add(pad(entry_widget(
+                            context, item, entries.indexOf(item))));
+                      }
 
-          return CircularProgressIndicator();
-        },
-      ),
-    );
+                      return Column(children: [
+                        Expanded(
+                            child: ListView(
+                          children: widget_entries,
+                        ))
+                      ]);
+                    } else if (snapshot.hasError) {
+                      return Text("${snapshot.error}");
+                    }
+
+                    return Center(child: CircularProgressIndicator());
+                  },
+                ),
+              ),
+              pad(Row(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Checkbox(
+                    value: current_being_edited.checked,
+                    onChanged: (value) {
+                      setState(() {
+                        current_being_edited.checked = value!;
+                      });
+                    },
+                  ),
+                  Flexible(
+                    child: Container(
+                      child: padx(TextField(
+                        controller: addedName,
+                        onChanged: (value) {},
+                      )),
+                    ),
+                  ),
+                  FloatingActionButton(
+                      onPressed: () => {
+                            setState(() {
+                              ShoppingListEntryPush entry =
+                                  ShoppingListEntryPush();
+
+                              entry.checked = false;
+                              entry.name = addedName.text;
+
+                              pbc.list_entry_add(self, entry);
+                            })
+                          },
+                      child: const Icon(Icons.add))
+                ],
+              ))
+            ])));
   }
 }
