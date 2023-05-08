@@ -9,6 +9,7 @@ class User {
   String type;
   String token;
   String renewalToken;
+  bool pro;
 
   User(
       {this.userId = "-1",
@@ -16,7 +17,8 @@ class User {
       this.email = "",
       this.type = "",
       this.token = "",
-      this.renewalToken = ""});
+      this.renewalToken = "",
+      this.pro = false});
 
   bool isNull() {
     return (userId) == "-1";
