@@ -1,4 +1,13 @@
+import 'dart:io';
+import 'dart:isolate';
+
 import 'package:flutter/material.dart';
+import 'package:ulist/list.dart';
+import 'package:ulist/pages/account_page.dart';
+import 'package:ulist/pages/list_page.dart';
+import 'package:ulist/pages/register_page.dart';
+import 'package:ulist/pocket_base.dart';
+import 'package:ulist/utils.dart';
 
 import 'services.dart';
 import 'package:ulist/pages/login_page.dart';
@@ -17,7 +26,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'U list',
-      theme: ThemeData(
+      theme: ThemeData.from(
+        colorScheme: ColorScheme.fromSeed(
+            seedColor: Colors.blue, brightness: Brightness.dark),
         // This is the theme of your application.
         //
         // Try running your application with "flutter run". You'll see the
@@ -29,15 +40,14 @@ class MyApp extends StatelessWidget {
         // is not restarted.
         useMaterial3: true,
         //    primarySwatch: Colors.blue,
-        colorSchemeSeed: Colors.blue,
       ),
-      home: const LoginPage(title: 'U list - login'),
+      home: const HomeSelect(title: 'U list'),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+class HomeSelect extends StatefulWidget {
+  const HomeSelect({super.key, required this.title});
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -51,85 +61,164 @@ class MyHomePage extends StatefulWidget {
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<HomeSelect> createState() => HomeSelectState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class HomeSelectState extends State<HomeSelect> {
   final _formKey = GlobalKey<FormState>();
-  TextEditingController emailController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+  bool _loading = false;
+
+  Future<String> init_loader() async {
+//    super.initState();
+
+    return Future.delayed(Duration(milliseconds: 16), () {
+      if (getIt<PocketBaseController>().loaded) {
+        return getIt<PocketBaseController>().current_user()!.email;
+      }
+
+      getIt<PocketBaseController>().init();
+
+      if (!getIt<PocketBaseController>().logged_in) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => const LoginPage(title: 'U list - login')),
+        ).then((value) {
+          setState(() {});
+        });
+
+        return "unlogged";
+      }
+      return getIt<PocketBaseController>().current_user()!.email;
+    });
+  }
+
+  List<ShoppingListRight> right_lists = [];
+  List<ShoppingList> lists = [];
+  Future<List<ShoppingList>> init_lists() async {
+    right_lists = [];
+    lists = [];
+    right_lists =
+        await getIt<PocketBaseController>().current_user_lists_right();
+
+    for (var l in right_lists) {
+      lists.add(await getIt<PocketBaseController>().get_list(l.shoppingListId));
+    }
+    return lists;
+  }
+
+  Widget get_lists(BuildContext context) {
+    return FutureBuilder<List<ShoppingList>>(
+        future: init_lists(),
+        builder: (BuildContext context, AsyncSnapshot snapshot) {
+          List<Widget> children = [];
+          if (snapshot.hasData || snapshot.hasError) {
+            List<ShoppingList> lists = snapshot.data;
+            for (var i = 0; i < snapshot.data.length; i++) {
+              children.add(Center(
+                  child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ListPage(
+                                  id: lists[i].uid, name: lists[i].name)),
+                        ).then((value) => {setState(() {})});
+                      },
+                      child: Text("Entry: " + lists[i].name.toString()))));
+            }
+            return Center(
+                child:
+                    Column(mainAxisSize: MainAxisSize.min, children: children));
+          } else {
+            return Text("Unable to load lists");
+          }
+        });
+  }
 
   @override
   Widget build(BuildContext context) {
+    var pbc = getIt<PocketBaseController>();
+    //ini();
     return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: Form(
-        key: _formKey,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                child: TextFormField(
-                  controller: emailController,
-                  decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: "Email",
-                      icon: Icon(Icons.email)),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your email';
-                    }
-                    return null;
-                  },
-                ),
-              ),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                child: TextFormField(
-                  controller: passwordController,
-                  obscureText: true,
-                  decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: "Password",
-                      icon: Icon(Icons.lock)),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter your password';
-                    }
-                    return null;
-                  },
-                ),
-              ),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 16.0),
-                child: Center(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (_formKey.currentState!.validate()) {
-                        // Navigate the user to the Home page
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Please fill input')),
-                        );
-                      }
-                    },
-                    child: const Text('Submit'),
-                  ),
-                ),
-              ),
-            ],
-          ),
+        appBar: AppBar(
+          title: Text(widget.title),
         ),
-      ),
-    );
+        body: Center(
+            child: FutureBuilder<String>(
+                future: init_loader(),
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  List<Widget> children;
+                  if (snapshot.hasData || snapshot.hasError) {
+                    if (pbc.logged_in) {
+                      children = [
+                        Center(
+                            child: pad(Text(
+                                "Logged in as ${pbc.current_user()!.email}"))),
+                        pad(ElevatedButton(
+                            onPressed: () => {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => const AccountPage(
+                                            title: 'U list - Account')),
+                                  ).then((value) => setState(() {})),
+                                },
+                            child: Text("Account"))),
+                        get_lists(context),
+                      ];
+                    } else {
+                      children = [
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            pad(ElevatedButton(
+                                onPressed: () => {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const LoginPage(
+                                                    title: 'U list - login')),
+                                      ).then((value) => {setState(() {})})
+                                    },
+                                child: Text("Login"))),
+                            pad(ElevatedButton(
+                                onPressed: () => {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const RegisterPage(
+                                                    title:
+                                                        'U list - register')),
+                                      ).then((value) => {setState(() {})})
+                                    },
+                                child: Text("Register")))
+                          ],
+                        )
+                      ];
+                    }
+                    //     children = [
+                    //       Center(child: pad(Text("Loaded ! ${snapshot.data}"))),
+                    //     ];
+                  } else {
+                    children = [
+                      Center(
+                          child:
+                              Column(mainAxisSize: MainAxisSize.min, children: [
+                        pad(CircularProgressIndicator()),
+                        pad(Text("Loading")),
+                        (_loading)
+                            ? pad(Text("Loading"))
+                            : pad(Text("Not Loading")),
+                      ]))
+                    ];
+                  }
+                  return Center(
+                      child: Column(
+                          mainAxisSize: MainAxisSize.min, children: children));
+                })));
   }
 }
 

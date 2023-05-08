@@ -1,16 +1,15 @@
-import 'dart:ffi';
+import 'dart:developer';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:ulist/pages/register_page.dart';
+import 'package:ulist/pages/login_page.dart';
 import 'package:ulist/pocket_base.dart';
 import '../services.dart';
 import '../pocket_base.dart';
 
 import 'package:ulist/utils.dart';
 
-class LoginPage extends StatefulWidget {
-  const LoginPage({super.key, required this.title, this.afterRegister = false});
+class RegisterPage extends StatefulWidget {
+  const RegisterPage({super.key, required this.title});
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -22,22 +21,27 @@ class LoginPage extends StatefulWidget {
   // always marked "final".
 
   final String title;
-  final bool afterRegister;
 
   @override
-  State<LoginPage> createState() => _LoginPage();
+  State<RegisterPage> createState() => _RegisterPage();
 }
 
-class _LoginPage extends State<LoginPage> {
+class _RegisterPage extends State<RegisterPage> {
   final _formKey = GlobalKey<FormState>();
-  TextEditingController emailController =
-      TextEditingController(text: (kDebugMode) ? "supercyp971@gmail.com" : "");
-  TextEditingController passwordController =
-      TextEditingController(text: (kDebugMode) ? "test123123" : "");
 
+  TextEditingController usernameController = TextEditingController(text: 'cyp');
+  TextEditingController emailController =
+      TextEditingController(text: "supercyp971@gmail.com");
+  TextEditingController passwordController =
+      TextEditingController(text: 'owoowoowo');
+  TextEditingController passwordConfirmController =
+      TextEditingController(text: 'owoowoowo');
+
+  var currentError = "";
   @override
   Widget build(BuildContext context) {
     var pbc = getIt<PocketBaseController>();
+
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -48,11 +52,28 @@ class _LoginPage extends State<LoginPage> {
           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
+
+            // USERNAME
             children: [
-              (widget.afterRegister)
-                  ? Text(
-                      "You're account has successfully been registered. Please login.")
-                  : Text("Please login."),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                child: TextFormField(
+                  controller: usernameController,
+                  decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: "Username",
+                      icon: Icon(Icons.account_box)),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your username';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+
+              // EMAIL
               Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
@@ -70,6 +91,8 @@ class _LoginPage extends State<LoginPage> {
                   },
                 ),
               ),
+
+              // PASSWORD
               Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
@@ -88,34 +111,59 @@ class _LoginPage extends State<LoginPage> {
                   },
                 ),
               ),
-              (pbc.logged_in)
-                  ? Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 16.0),
-                      child: Center(
-                        child:
-                            Text("Logged in as " + pbc.current_user()!.email),
-                      ),
-                    )
-                  : (Container()),
+
+              // PASSWORD CONFIRM
               Padding(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 16.0),
-                child: Center(
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                child: TextFormField(
+                  controller: passwordConfirmController,
+                  obscureText: true,
+                  decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: "Confirm Password",
+                      icon: Icon(Icons.lock)),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter your password';
+                    }
+                    if (value != passwordController.text) {
+                      return 'Passwords do not match';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+
+              pad(Text(currentError,
+                  style: const TextStyle(color: Colors.red))),
+
+              pad(
+                Center(
                   child: Column(children: [
                     pad(ElevatedButton(
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
                           var res = pbc
-                              .login(
-                                  emailController.text, passwordController.text)
+                              .register(
+                                  usernameController.text,
+                                  emailController.text,
+                                  passwordController.text,
+                                  passwordConfirmController.text)
                               .then((value) {
-                            Navigator.pop(context);
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => LoginPage(
+                                        title: "Login", afterRegister: true)));
                           }).catchError((e) {
+                            print(e.toString());
+                            setState(() =>
+                                currentError = deobfuscateError(e.response));
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                  content: Text('Login failed: ' +
-                                      e.response["message"])),
+                                  content: Text('Register failed: ' +
+                                      e.response['message'].toString())),
                             );
                           });
                         } else {
@@ -124,7 +172,7 @@ class _LoginPage extends State<LoginPage> {
                           );
                         }
                       },
-                      child: const Text('Login'),
+                      child: const Text('Register'),
                     )),
                     Row(
                       mainAxisSize: MainAxisSize.min,
@@ -134,14 +182,10 @@ class _LoginPage extends State<LoginPage> {
                             Navigator.pushReplacement(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) =>
-                                        RegisterPage(title: "Register")));
+                                    builder: (context) => LoginPage(
+                                        title: "Login", afterRegister: false)));
                           },
-                          child: const Text('Register'),
-                        )),
-                        pad(TextButton(
-                          onPressed: () {},
-                          child: const Text('Forgot password?'),
+                          child: const Text('Login'),
                         )),
                       ],
                     )
