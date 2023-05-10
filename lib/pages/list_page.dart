@@ -2,6 +2,7 @@ import 'dart:ffi';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:ulist/components/list_entry.dart';
 import 'package:ulist/list.dart';
 import 'package:ulist/pages/register_page.dart';
 import 'package:ulist/pocket_base.dart';
@@ -36,7 +37,7 @@ class _ListPage extends State<ListPage> {
   TextEditingController addedName = TextEditingController();
 
   ShoppingListEntry current_being_edited = ShoppingListEntry();
-
+  AnimatedListState animatedListState = AnimatedListState();
   bool loaded = false;
 
   Future<bool> upload_change(int place) async {
@@ -93,71 +94,7 @@ class _ListPage extends State<ListPage> {
     );
   }
 
-  Widget entry_widget(
-      BuildContext context, ShoppingListEntry entry, int place) {
-    TextStyle default_style = Theme.of(context).textTheme.bodyLarge!.copyWith(
-          overflow: TextOverflow.ellipsis,
-        );
-
-    TextStyle checked_style = default_style.copyWith(
-        decoration: TextDecoration.lineThrough, color: Colors.grey);
-    return Row(
-      mainAxisSize: MainAxisSize.max,
-      children: [
-        Checkbox(
-          value: entry.checked,
-          onChanged: (value) {
-            setState(() {
-              entries[place].checked = value!;
-              upload_change(place);
-            });
-          },
-        ),
-        Flexible(
-          child: Container(
-              child: Text(entry.name,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  softWrap: true,
-                  style: ((entry.checked) ? checked_style : default_style))),
-        )
-      ],
-    );
-  }
-
-  void openDialog(BuildContext context) {
-    showModalBottomSheet<void>(
-      context: context,
-      builder: (context) => SizedBox(
-          height: 400,
-          child: Dialog(
-              child: pad(Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Row(mainAxisSize: MainAxisSize.min, children: [
-                pad(
-                  Text("Add entry",
-                      style: Theme.of(context).textTheme.headlineLarge),
-                )
-              ]),
-              pad(TextField(
-                controller: TextEditingController(text: ""),
-                onChanged: (value) {},
-                decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: "Name",
-                    icon: Icon(Icons.add)),
-              )),
-              pad(ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: Text("Add"),
-              ))
-            ],
-          )))),
-    );
-  }
+  final GlobalKey<AnimatedListState> _key = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -176,17 +113,85 @@ class _ListPage extends State<ListPage> {
                   builder: (context, snapshot) {
                     if (snapshot.hasData) {
                       List<Widget> widget_entries = [];
+
+                      final checked_widget =
+                          entries.where((element) => element.checked).toList();
+                      final unchecked_widget =
+                          entries.where((element) => !element.checked).toList();
+
+                      checked_widget.sort((a, b) => a.name.compareTo(b.name));
+
+                      unchecked_widget.sort((a, b) => a.name.compareTo(b.name));
+
+                      entries = unchecked_widget + checked_widget;
                       for (var item in entries) {
-                        widget_entries.add(pad(entry_widget(
-                            context, item, entries.indexOf(item))));
+                        int i = entries.indexOf(item);
+                        widget_entries.add(ListEntry(
+                            id: i,
+                            entry: entries[i],
+                            onChanged: (new_entry, id, slide) {
+                              var prev = entries[i];
+                              entries[i].checked = new_entry.checked;
+
+                              upload_change(i);
+
+                              if (slide) {
+                                _key.currentState!.removeItem(
+                                    id,
+                                    (context, animation) => SizeTransition(
+                                        sizeFactor: animation,
+                                        child: SlideTransition(
+                                            position: Tween<Offset>(
+                                              begin: const Offset(10, 0),
+                                              end: const Offset(10, 0),
+                                            ).animate(animation),
+                                            child: ListEntry(
+                                              id: i,
+                                              entry: prev,
+                                              onChanged: (entry, id, swpi) {},
+                                            ))),
+                                    duration:
+                                        const Duration(milliseconds: 300));
+                              } else {
+                                _key.currentState!.removeItem(
+                                    id,
+                                    (context, animation) => SizeTransition(
+                                        sizeFactor: animation,
+                                        child: SlideTransition(
+                                            position: Tween<Offset>(
+                                              begin: const Offset(1, 0),
+                                              end: Offset(0, 0),
+                                            ).animate(animation),
+                                            child: ListEntry(
+                                              id: i,
+                                              entry: prev,
+                                              onChanged: (entry, id, swpi) {},
+                                            ))),
+                                    duration:
+                                        const Duration(milliseconds: 300));
+                              }
+
+                              _key.currentState!.insertItem(i,
+                                  duration: const Duration(milliseconds: 0));
+
+                              // entries.removeAt(i);
+                              //  entries.add(new_entry);
+                              setState(() {});
+                            }));
                       }
 
-                      return Column(children: [
+                      return pad(Column(children: [
                         Expanded(
-                            child: ListView(
-                          children: widget_entries,
+                            child: AnimatedList(
+                          key: _key,
+                          initialItemCount: widget_entries.length,
+                          itemBuilder: (context, index, animation) {
+                            return SizeTransition(
+                                sizeFactor: animation,
+                                child: widget_entries[index]);
+                          },
                         ))
-                      ]);
+                      ]));
                     } else if (snapshot.hasError) {
                       return Text("${snapshot.error}");
                     }
