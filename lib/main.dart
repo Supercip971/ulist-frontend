@@ -26,9 +26,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'U list',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData.from(
         colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.blue, brightness: Brightness.dark),
+            seedColor: Colors.greenAccent, brightness: Brightness.light),
         // This is the theme of your application.
         //
         // Try running your application with "flutter run". You'll see the
@@ -64,6 +65,8 @@ class HomeSelect extends StatefulWidget {
   State<HomeSelect> createState() => HomeSelectState();
 }
 
+enum MenuSelect { menuAccount, menuSettings }
+
 class HomeSelectState extends State<HomeSelect> {
   final _formKey = GlobalKey<FormState>();
   bool _loading = false;
@@ -97,10 +100,10 @@ class HomeSelectState extends State<HomeSelect> {
   List<ShoppingList> lists = [];
   Future<List<ShoppingList>> init_lists() async {
     right_lists = [];
-    lists = [];
     right_lists =
         await getIt<PocketBaseController>().current_user_lists_right();
 
+    lists = [];
     for (var l in right_lists) {
       lists.add(await getIt<PocketBaseController>().get_list(l.shoppingListId));
     }
@@ -136,6 +139,9 @@ class HomeSelectState extends State<HomeSelect> {
         });
   }
 
+  MenuSelect? selectedMenu;
+
+  int _selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
     var pbc = getIt<PocketBaseController>();
@@ -143,6 +149,53 @@ class HomeSelectState extends State<HomeSelect> {
     return Scaffold(
         appBar: AppBar(
           title: Text(widget.title),
+          actions: [
+            IconButton(
+                onPressed: () => {
+                      showDialog<void>(
+                        context: context,
+                        builder: (context) => SizedBox(
+                            height: 400,
+                            child: Dialog(
+                                child: pad(Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Row(mainAxisSize: MainAxisSize.min, children: [
+                                  pad(
+                                    Text("Ulist",
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .headlineLarge),
+                                  )
+                                ]),
+                                Card(
+                                    child: pad(Column(children: [
+                                  pad(Row(
+                                    children: [
+                                      padx(Icon(Icons.account_circle)),
+                                      padx(Text("Account"))
+                                    ],
+                                  )),
+                                  pad(Row(
+                                    children: [
+                                      padx(Icon(Icons.settings)),
+                                      padx(Text("Settings"))
+                                    ],
+                                  )),
+                                  pad(Row(
+                                    children: [
+                                      padx(Icon(Icons.handshake)),
+                                      padx(Text(
+                                          "Licenses and legal information"))
+                                    ],
+                                  )),
+                                ])))
+                              ],
+                            )))),
+                      )
+                    },
+                icon: Icon(Icons.account_circle))
+          ],
         ),
         body: Center(
             child: FutureBuilder<String>(
