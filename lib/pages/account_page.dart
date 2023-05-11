@@ -49,43 +49,69 @@ class _AccountPage extends State<AccountPage> {
             child: Padding(
                 padding:
                     const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-                child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
+                child: Center(
+                    child: pad(Material(
+                        elevation: 0.5,
+                        type: MaterialType.card,
+                        surfaceTintColor:
+                            Theme.of(context).colorScheme.surfaceTint,
+                        color: Theme.of(context).colorScheme.surface,
+                        borderRadius: BorderRadius.all(Radius.circular(8.0)),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisSize: MainAxisSize.min,
 
-                    // USERNAME
-                    children: [
-                      pad(
-                        Text("User: $username"),
-                      ),
-                      pad(
-                        Text("Mail: $mail"),
-                      ),
-                      pad(Text("Has pro ?: $pro")),
-                      pad(Center(
-                          child: Column(children: [
-                        pad(ElevatedButton(
-                          onPressed: () {
-                            var res = pbc.logout().then((value) {
-                              Navigator.pushReplacement(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => LoginPage(
-                                          title: "Login",
-                                          afterRegister: true)));
-                            }).catchError((e) {
-                              setState(() =>
-                                  currentError = deobfuscateError(e.response));
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(
-                                    content: Text('Logout failed: ' +
-                                        e.response['message'].toString())),
-                              );
-                            });
-                          },
-                          child: const Text('Logout'),
-                        ))
-                      ])))
-                    ]))));
+                            // USERNAME
+                            children: [
+                              pad(Center(
+                                  child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Icon(Icons.account_circle, size: 100),
+                                  Text(
+                                    "$username",
+                                    style: TextStyle(fontSize: 24),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                ],
+                              ))),
+                              pad(Row(
+                                children: [
+                                  padx(Icon(Icons.email)),
+                                  Text("$mail"),
+                                ],
+                              )),
+                              pad((Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    pad(ElevatedButton(
+                                      onPressed: () {
+                                        var res = pbc.logout().then((value) {
+                                          Navigator.pushReplacement(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      LoginPage(
+                                                          title: "Login",
+                                                          afterRegister:
+                                                              true)));
+                                        }).catchError((e) {
+                                          setState(() => currentError =
+                                              deobfuscateError(e.response));
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            SnackBar(
+                                                content: Text(
+                                                    'Logout failed: ' +
+                                                        e.response['message']
+                                                            .toString())),
+                                          );
+                                        });
+                                      },
+                                      child: const Text('Logout'),
+                                    ))
+                                  ])))
+                            ])))))));
   }
 }
