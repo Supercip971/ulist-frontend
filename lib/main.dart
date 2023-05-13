@@ -2,9 +2,12 @@ import 'dart:io';
 import 'dart:isolate';
 
 import 'package:flutter/material.dart';
+import 'package:ulist/components/list_lists.dart';
 import 'package:ulist/list.dart';
 import 'package:ulist/pages/account_page.dart';
 import 'package:ulist/pages/list_page.dart';
+import 'package:ulist/pages/popups/home_properties.dart';
+import 'package:ulist/pages/popups/new_list.dart';
 import 'package:ulist/pages/register_page.dart';
 import 'package:ulist/pocket_base.dart';
 import 'package:ulist/utils.dart';
@@ -29,7 +32,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData.from(
         colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.greenAccent, brightness: Brightness.light),
+            seedColor: Colors.greenAccent, brightness: Brightness.dark),
         // This is the theme of your application.
         //
         // Try running your application with "flutter run". You'll see the
@@ -42,7 +45,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
         //    primarySwatch: Colors.blue,
       ),
-      home: const HomeSelect(title: 'U list'),
+      home: const HomeSelect(title: 'Ulist'),
     );
   }
 }
@@ -85,7 +88,7 @@ class HomeSelectState extends State<HomeSelect> {
         Navigator.push(
           context,
           MaterialPageRoute(
-              builder: (context) => const LoginPage(title: 'U list - login')),
+              builder: (context) => const LoginPage(title: 'ULIST - login')),
         ).then((value) {
           setState(() {});
         });
@@ -111,32 +114,10 @@ class HomeSelectState extends State<HomeSelect> {
   }
 
   Widget get_lists(BuildContext context) {
-    return FutureBuilder<List<ShoppingList>>(
-        future: init_lists(),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          List<Widget> children = [];
-          if (snapshot.hasData || snapshot.hasError) {
-            List<ShoppingList> lists = snapshot.data;
-            for (var i = 0; i < snapshot.data.length; i++) {
-              children.add(Center(
-                  child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => ListPage(
-                                  id: lists[i].uid, name: lists[i].name)),
-                        ).then((value) => {setState(() {})});
-                      },
-                      child: Text("Entry: " + lists[i].name.toString()))));
-            }
-            return Center(
-                child:
-                    Column(mainAxisSize: MainAxisSize.min, children: children));
-          } else {
-            return Text("Unable to load lists");
-          }
-        });
+    return Column(children: [
+      FutureBuilder<List<ShoppingList>>(
+          future: init_lists(), builder: listListWidget),
+    ]);
   }
 
   MenuSelect? selectedMenu;
@@ -148,54 +129,31 @@ class HomeSelectState extends State<HomeSelect> {
     //ini();
     return Scaffold(
         appBar: AppBar(
-          title: Text(widget.title),
+          centerTitle: true,
+          title: Text(widget.title,
+              style: Theme.of(context).textTheme.headlineMedium),
           actions: [
-            IconButton(
-                onPressed: () => {
-                      showDialog<void>(
-                        context: context,
-                        builder: (context) => SizedBox(
-                            height: 400,
-                            child: Dialog(
-                                child: pad(Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Row(mainAxisSize: MainAxisSize.min, children: [
-                                  pad(
-                                    Text("Ulist",
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .headlineLarge),
-                                  )
-                                ]),
-                                Card(
-                                    child: pad(Column(children: [
-                                  pad(Row(
-                                    children: [
-                                      padx(Icon(Icons.account_circle)),
-                                      padx(Text("Account"))
-                                    ],
-                                  )),
-                                  pad(Row(
-                                    children: [
-                                      padx(Icon(Icons.settings)),
-                                      padx(Text("Settings"))
-                                    ],
-                                  )),
-                                  pad(Row(
-                                    children: [
-                                      padx(Icon(Icons.handshake)),
-                                      padx(Text(
-                                          "Licenses and legal information"))
-                                    ],
-                                  )),
-                                ])))
-                              ],
-                            )))),
-                      )
-                    },
-                icon: Icon(Icons.account_circle))
+            padx(IconButton(
+                onPressed: () => {showPropertiesAccount(context)},
+                icon: Icon(Icons.account_circle)))
           ],
+        ),
+        floatingActionButton: FloatingActionButton.extended(
+          onPressed: () => {
+            showNewListSettings(context).then(
+              (value) => {
+                if (value != null)
+                  {
+                    setState(() {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text("List created")));
+                    })
+                  }
+              },
+            )
+          },
+          label: Text("Add list"),
+          icon: Icon(Icons.add),
         ),
         body: Center(
             child: FutureBuilder<String>(
@@ -204,22 +162,7 @@ class HomeSelectState extends State<HomeSelect> {
                   List<Widget> children;
                   if (snapshot.hasData || snapshot.hasError) {
                     if (pbc.logged_in) {
-                      children = [
-                        Center(
-                            child: pad(Text(
-                                "Logged in as ${pbc.current_user()!.email}"))),
-                        pad(ElevatedButton(
-                            onPressed: () => {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) => const AccountPage(
-                                            title: 'U list - Account')),
-                                  ).then((value) => setState(() {})),
-                                },
-                            child: Text("Account"))),
-                        get_lists(context),
-                      ];
+                      children = [get_lists(context)];
                     } else {
                       children = [
                         Column(
