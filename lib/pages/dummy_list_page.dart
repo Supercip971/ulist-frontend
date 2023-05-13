@@ -1,7 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:ulist/components/list_entry.dart';
+import 'package:ulist/components/list_entry_dummy.dart';
 import 'package:ulist/list.dart';
+import 'package:ulist/listRequestCacher.dart';
+import 'package:ulist/pages/list_page.dart';
 import 'package:ulist/pages/register_page.dart';
 import 'package:ulist/pocket_base.dart';
 import '../services.dart';
@@ -10,7 +13,7 @@ import '../pocket_base.dart';
 import 'package:ulist/utils.dart';
 
 class DummyListPage extends StatefulWidget {
-  const DummyListPage({super.key, required this.id, required this.name});
+  const DummyListPage({super.key, this.list});
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -21,30 +24,42 @@ class DummyListPage extends StatefulWidget {
   // used by the build method of the State. Fields in a Widget subclass are
   // always marked "final".
 
-  final String id;
-  final String name;
-  final OverlayEntry? overlay_entry = null;
+  final ShoppingList? list;
 
   @override
   State<DummyListPage> createState() => _DummyListPage();
 }
 
-Widget dummy_list_entries() {
+Widget dummy_list_entries(ShoppingList? l) {
   List<Widget> widget_entries = [];
   List<ShoppingListEntry> entries = [];
+
+  bool used_cache = false;
   // generating dummy entries
 
-  for (var i = 0; i < 64; i++) {
-    ShoppingListEntry entry = ShoppingListEntry();
-    entry.name = "...";
-    entry.checked = false;
-    entry.addedBy = "user";
-    entries.add(entry);
+  if (l != null) {
+    final cache_controller =
+        getIt<ListRequestCacher>().get_list_entries_only_cached(l);
+
+    if (cache_controller != null) {
+      used_cache = true;
+      entries = reorderShoppingListEntries(cache_controller);
+    }
+  }
+
+  if (!used_cache) {
+    for (var i = 0; i < 64; i++) {
+      ShoppingListEntry entry = ShoppingListEntry();
+      entry.name = "...";
+      entry.checked = false;
+      entry.addedBy = "user";
+      entries.add(entry);
+    }
   }
 
   for (var item in entries) {
     int i = entries.indexOf(item);
-    widget_entries.add(ListEntry(
+    widget_entries.add(DummyListEntry(
         id: i, entry: entries[i], onChanged: (new_entry, id, slide) {}));
   }
 
@@ -60,7 +75,6 @@ Widget dummy_list_entries() {
 }
 
 class _DummyListPage extends State<DummyListPage> {
-  ShoppingList self = ShoppingList();
   List<ShoppingListEntry> entries = [];
 
   TextEditingController addedName = TextEditingController();
@@ -75,27 +89,24 @@ class _DummyListPage extends State<DummyListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: (Text(widget.name.toString(),
+          title: (Text(
+              widget.list == null ? ("List") : widget.list!.name.toString(),
               style: Theme.of(context).textTheme.headlineSmall)),
           leading: IconButton(
-            icon: const Icon(Icons.hourglass_empty),
+            icon: const Icon(Icons.arrow_back),
             onPressed: () => {},
           ),
         ),
         body: Center(
             heightFactor: 1.0,
             child: Column(children: [
-              Flexible(child: dummy_list_entries()),
+              Flexible(child: dummy_list_entries(widget.list)),
               pad(Row(
                 mainAxisSize: MainAxisSize.max,
                 children: [
                   Checkbox(
                     value: current_being_edited.checked,
-                    onChanged: (value) {
-                      setState(() {
-                        current_being_edited.checked = value!;
-                      });
-                    },
+                    onChanged: (value) {},
                   ),
                   Flexible(
                     child: Container(
@@ -106,7 +117,8 @@ class _DummyListPage extends State<DummyListPage> {
                     ),
                   ),
                   FloatingActionButton(
-                      onPressed: () => {}, child: const Icon(Icons.add))
+                      onPressed: () => {},
+                      child: const CircularProgressIndicator())
                 ],
               ))
             ])));

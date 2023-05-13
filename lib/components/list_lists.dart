@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ulist/components/list_lists_enry.dart';
+import 'package:ulist/components/list_lists_entry.dart';
 import 'package:ulist/list.dart';
 import 'package:ulist/pages/list_page.dart';
 import 'package:ulist/utils.dart';

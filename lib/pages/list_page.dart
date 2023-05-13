@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:ulist/components/list_entry.dart';
 import 'package:ulist/list.dart';
+import 'package:ulist/listRequestCacher.dart';
 import 'package:ulist/pages/dummy_list_page.dart';
 import 'package:ulist/pages/register_page.dart';
 import 'package:ulist/pocket_base.dart';
@@ -32,6 +33,23 @@ class ListPage extends StatefulWidget {
   State<ListPage> createState() => _ListPage();
 }
 
+List<ShoppingListEntry> reorderShoppingListEntries(
+    List<ShoppingListEntry> entries) {
+  List<ShoppingListEntry> checked = [];
+  List<ShoppingListEntry> unchecked = [];
+  for (var item in entries) {
+    if (item.checked) {
+      checked.add(item);
+    } else {
+      unchecked.add(item);
+    }
+  }
+  checked.sort((a, b) => a.name.compareTo(b.name));
+  unchecked.sort((a, b) => a.name.compareTo(b.name));
+  unchecked.addAll(checked);
+  return unchecked;
+}
+
 class _ListPage extends State<ListPage> {
   ShoppingList self = ShoppingList();
   List<ShoppingListEntry> entries = [];
@@ -41,7 +59,7 @@ class _ListPage extends State<ListPage> {
   ShoppingListEntry current_being_edited = ShoppingListEntry();
   AnimatedListState animatedListState = AnimatedListState();
   bool loaded = false;
-
+  bool loading = true;
   Future<bool> upload_change(int place) async {
     var pbc = getIt<PocketBaseController>();
     var entry = entries[place];
@@ -57,17 +75,29 @@ class _ListPage extends State<ListPage> {
   }
 
   Future<bool> load_data(bool hard) async {
+    setState(() {
+      loading = true;
+    });
+
     if (loaded && !hard) {
+      setState(() {
+        loading = false;
+      });
+
       return false;
     }
     var pbc = getIt<PocketBaseController>();
-    var list = await pbc.get_list(widget.id);
-    self = list;
 
-    entries = await pbc.get_list_entries(list);
+    self.uid = widget.id;
+    self.name = widget.name;
+    entries = await getIt<ListRequestCacher>()
+        .get_list_entries_cached(self, refresh_cache: true);
 
     loaded = true;
 
+    setState(() {
+      loading = false;
+    });
     return true;
   }
 
@@ -100,110 +130,112 @@ class _ListPage extends State<ListPage> {
 
   final GlobalKey<AnimatedListState> _key = GlobalKey();
 
+  Widget listEntries() {
+    List<Widget> widget_entries = [];
+
+    entries = reorderShoppingListEntries(entries);
+    for (var item in entries) {
+      int i = entries.indexOf(item);
+      widget_entries.add(ListEntry(
+          id: i,
+          entry: entries[i],
+          onChanged: (new_entry, id, slide) {
+            var prev = entries[i];
+            entries[i].checked = new_entry.checked;
+
+            upload_change(i);
+
+            if (slide) {
+              _key.currentState!.removeItem(
+                  id,
+                  (context, animation) => SizeTransition(
+                      sizeFactor: animation,
+                      child: SlideTransition(
+                          position: Tween<Offset>(
+                            begin: const Offset(10, 0),
+                            end: const Offset(10, 0),
+                          ).animate(animation),
+                          child: ListEntry(
+                            id: i,
+                            entry: prev,
+                            onChanged: (entry, id, swpi) {},
+                          ))),
+                  duration: const Duration(milliseconds: 300));
+            } else {
+              _key.currentState!.removeItem(
+                  id,
+                  (context, animation) => SizeTransition(
+                      sizeFactor: animation,
+                      child: SlideTransition(
+                          position: Tween<Offset>(
+                            begin: const Offset(1, 0),
+                            end: Offset(0, 0),
+                          ).animate(animation),
+                          child: ListEntry(
+                            id: i,
+                            entry: prev,
+                            onChanged: (entry, id, swpi) {},
+                          ))),
+                  duration: const Duration(milliseconds: 300));
+            }
+
+            _key.currentState!
+                .insertItem(i, duration: const Duration(milliseconds: 0));
+
+            // entries.removeAt(i);
+            //  entries.add(new_entry);
+            setState(() {});
+          }));
+    }
+
+    return pad(Column(children: [
+      Expanded(
+          child: AnimatedList(
+        key: _key,
+        initialItemCount: widget_entries.length,
+        itemBuilder: (context, index, animation) {
+          return SizeTransition(
+              sizeFactor: animation, child: widget_entries[index]);
+        },
+      ))
+    ]));
+  }
+
+  Widget entryLoader() {
+    self.uid = widget.id;
+    self.name = widget.name;
+
+    return FutureBuilder<bool>(
+      future: load_data(true),
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          return listEntries();
+        } else if (snapshot.hasError) {
+          return Text("${snapshot.error}");
+        }
+
+        return dummy_list_entries(self);
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     var pbc = getIt<PocketBaseController>();
 
     return Scaffold(
         appBar: AppBar(
-          title: (Text(widget.name.toString(),
-              style: Theme.of(context).textTheme.headlineSmall)),
+          title: Row(children: [
+            Text(widget.name.toString(),
+                style: Theme.of(context).textTheme.headlineSmall),
+            if (loading) padx(const CircularProgressIndicator(), factor: 3.0)
+          ]),
         ),
         body: Center(
             heightFactor: 1.0,
             child: Column(children: [
               Flexible(
-                child: FutureBuilder<bool>(
-                  future: load_data(true),
-                  builder: (context, snapshot) {
-                    if (snapshot.hasData) {
-                      List<Widget> widget_entries = [];
-
-                      final checked_widget =
-                          entries.where((element) => element.checked).toList();
-                      final unchecked_widget =
-                          entries.where((element) => !element.checked).toList();
-
-                      checked_widget.sort((a, b) => a.name.compareTo(b.name));
-
-                      unchecked_widget.sort((a, b) => a.name.compareTo(b.name));
-
-                      entries = unchecked_widget + checked_widget;
-                      for (var item in entries) {
-                        int i = entries.indexOf(item);
-                        widget_entries.add(ListEntry(
-                            id: i,
-                            entry: entries[i],
-                            onChanged: (new_entry, id, slide) {
-                              var prev = entries[i];
-                              entries[i].checked = new_entry.checked;
-
-                              upload_change(i);
-
-                              if (slide) {
-                                _key.currentState!.removeItem(
-                                    id,
-                                    (context, animation) => SizeTransition(
-                                        sizeFactor: animation,
-                                        child: SlideTransition(
-                                            position: Tween<Offset>(
-                                              begin: const Offset(10, 0),
-                                              end: const Offset(10, 0),
-                                            ).animate(animation),
-                                            child: ListEntry(
-                                              id: i,
-                                              entry: prev,
-                                              onChanged: (entry, id, swpi) {},
-                                            ))),
-                                    duration:
-                                        const Duration(milliseconds: 300));
-                              } else {
-                                _key.currentState!.removeItem(
-                                    id,
-                                    (context, animation) => SizeTransition(
-                                        sizeFactor: animation,
-                                        child: SlideTransition(
-                                            position: Tween<Offset>(
-                                              begin: const Offset(1, 0),
-                                              end: Offset(0, 0),
-                                            ).animate(animation),
-                                            child: ListEntry(
-                                              id: i,
-                                              entry: prev,
-                                              onChanged: (entry, id, swpi) {},
-                                            ))),
-                                    duration:
-                                        const Duration(milliseconds: 300));
-                              }
-
-                              _key.currentState!.insertItem(i,
-                                  duration: const Duration(milliseconds: 0));
-
-                              // entries.removeAt(i);
-                              //  entries.add(new_entry);
-                              setState(() {});
-                            }));
-                      }
-
-                      return pad(Column(children: [
-                        Expanded(
-                            child: AnimatedList(
-                          key: _key,
-                          initialItemCount: widget_entries.length,
-                          itemBuilder: (context, index, animation) {
-                            return SizeTransition(
-                                sizeFactor: animation,
-                                child: widget_entries[index]);
-                          },
-                        ))
-                      ]));
-                    } else if (snapshot.hasError) {
-                      return Text("${snapshot.error}");
-                    }
-
-                    return dummy_list_entries();
-                  },
-                ),
+                child: entryLoader(),
               ),
               pad(Row(
                 mainAxisSize: MainAxisSize.max,

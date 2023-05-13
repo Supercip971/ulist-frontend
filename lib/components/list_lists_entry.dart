@@ -66,8 +66,8 @@ class _ListOfListEntryWidget extends State<ListOfListEntryWidget>
   @override
   void initState() {
     super.initState();
-    animationController =
-        AnimationController(duration: Duration(seconds: 3), vsync: this);
+    animationController = AnimationController(
+        duration: const Duration(milliseconds: 550), vsync: this);
 
     WidgetsBinding.instance.addPostFrameCallback(_afterLayout);
   }
@@ -162,7 +162,7 @@ class _ListOfListEntryWidget extends State<ListOfListEntryWidget>
                             ])),
                     FadeTransition(
                         opacity: fadeAnimation,
-                        child: DummyListPage(id: "", name: widget.entry.name)),
+                        child: DummyListPage(list: widget.entry)),
                   ],
                 )),
           ));
