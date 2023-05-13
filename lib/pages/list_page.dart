@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:ulist/components/list_entry.dart';
 import 'package:ulist/list.dart';
+import 'package:ulist/pages/dummy_list_page.dart';
 import 'package:ulist/pages/register_page.dart';
 import 'package:ulist/pocket_base.dart';
 import '../services.dart';
@@ -25,6 +26,7 @@ class ListPage extends StatefulWidget {
 
   final String id;
   final String name;
+  final OverlayEntry? overlay_entry = null;
 
   @override
   State<ListPage> createState() => _ListPage();
@@ -72,8 +74,10 @@ class _ListPage extends State<ListPage> {
   Widget add_entry_page(ShoppingListEntry entry) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Add entry"),
-      ),
+          title: Hero(
+              tag: 'title-hero-${widget.id}',
+              child: Text(widget.name.toString(),
+                  style: Theme.of(context).textTheme.bodyLarge))),
       body: Column(
         children: [
           Text("Add entry"),
@@ -102,7 +106,8 @@ class _ListPage extends State<ListPage> {
 
     return Scaffold(
         appBar: AppBar(
-          title: Text(widget.name),
+          title: (Text(widget.name.toString(),
+              style: Theme.of(context).textTheme.headlineSmall)),
         ),
         body: Center(
             heightFactor: 1.0,
@@ -196,7 +201,7 @@ class _ListPage extends State<ListPage> {
                       return Text("${snapshot.error}");
                     }
 
-                    return Center(child: CircularProgressIndicator());
+                    return dummy_list_entries();
                   },
                 ),
               ),
