@@ -53,12 +53,13 @@ List<ShoppingListEntry> reorderShoppingListEntries(
 class _ListPage extends State<ListPage> {
   ShoppingList self = ShoppingList();
   List<ShoppingListEntry> entries = [];
+  
 
   TextEditingController addedName = TextEditingController();
 
   ShoppingListEntry current_being_edited = ShoppingListEntry();
   AnimatedListState animatedListState = AnimatedListState();
-  bool loaded = false;
+  bool dirty = true;
   bool loading = true;
   Future<bool> upload_change(int place) async {
     var pbc = getIt<PocketBaseController>();
@@ -75,17 +76,24 @@ class _ListPage extends State<ListPage> {
   }
 
   Future<bool> load_data(bool hard) async {
-    setState(() {
-      loading = true;
-    });
+    loading = true;
 
-    if (loaded && !hard) {
-      setState(() {
-        loading = false;
-      });
+      
+    if (!dirty && !hard) {
+      
+      if(loading){
+        setState(() {
+          loading = false;
+        });
+      }
 
       return false;
     }
+
+    print("Reloading...");
+    setState(() {
+      loading = true;
+    });
     var pbc = getIt<PocketBaseController>();
 
     self.uid = widget.id;
@@ -93,10 +101,10 @@ class _ListPage extends State<ListPage> {
     entries = await getIt<ListRequestCacher>()
         .get_list_entries_cached(self, refresh_cache: true);
 
-    loaded = true;
-
+    
     setState(() {
       loading = false;
+      dirty = false;
     });
     return true;
   }
@@ -206,7 +214,7 @@ class _ListPage extends State<ListPage> {
     self.name = widget.name;
 
     return FutureBuilder<bool>(
-      future: load_data(true),
+      future: load_data(false),
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           return listEntries();
@@ -266,6 +274,7 @@ class _ListPage extends State<ListPage> {
                               entry.name = addedName.text;
 
                               pbc.list_entry_add(self, entry);
+                              dirty = true;
                             })
                           },
                       child: const Icon(Icons.add))
