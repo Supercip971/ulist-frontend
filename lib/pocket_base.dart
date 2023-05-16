@@ -9,7 +9,7 @@ import 'services.dart';
 
 import 'user.dart';
 
-const pb_url = ("http://127.0.0.1:8090");
+const pb_url = ("https://ulist-backend.cyp.sh/");
 
 PocketBase pb = PocketBase(pb_url);
 
