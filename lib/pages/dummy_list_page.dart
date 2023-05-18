@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:ulist/components/list_entry.dart';
 import 'package:ulist/components/list_entry_dummy.dart';
+import 'package:ulist/components/list_properties.dart';
 import 'package:ulist/list.dart';
 import 'package:ulist/listRequestCacher.dart';
 import 'package:ulist/pages/list_page.dart';
@@ -96,6 +97,7 @@ class _DummyListPage extends State<DummyListPage> {
             icon: const Icon(Icons.arrow_back),
             onPressed: () => {},
           ),
+          actions: [(ListPropertiesBar(entry: widget.list!))],
         ),
         body: Center(
             heightFactor: 1.0,

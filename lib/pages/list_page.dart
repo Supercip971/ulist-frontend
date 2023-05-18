@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:ulist/components/list_entry.dart';
+import 'package:ulist/components/list_properties.dart';
 import 'package:ulist/list.dart';
 import 'package:ulist/listRequestCacher.dart';
 import 'package:ulist/pages/dummy_list_page.dart';
@@ -244,12 +245,12 @@ class _ListPage extends State<ListPage> {
 
     return Scaffold(
         appBar: AppBar(
-          title: Row(children: [
-            Text(widget.name.toString(),
-                style: Theme.of(context).textTheme.headlineSmall),
-            if (loading) padx(const CircularProgressIndicator(), factor: 3.0)
-          ]),
-        ),
+            title: Row(children: [
+              Text(widget.name.toString(),
+                  style: Theme.of(context).textTheme.headlineSmall),
+              if (loading) padx(const CircularProgressIndicator(), factor: 3.0)
+            ]),
+            actions: [ListPropertiesBar(entry: self)]),
         body: Center(
             heightFactor: 1.0,
             child: Column(children: [
