@@ -82,20 +82,20 @@ class HomeSelectState extends State<HomeSelect> {
         return getIt<PocketBaseController>().current_user()!.email;
       }
 
-      getIt<PocketBaseController>().init();
+      return getIt<PocketBaseController>().init().then((value) {
+        if (!getIt<PocketBaseController>().logged_in) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const LoginPage(title: 'ULIST - login')),
+          ).then((value) {
+            setState(() {});
+          });
 
-      if (!getIt<PocketBaseController>().logged_in) {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => const LoginPage(title: 'ULIST - login')),
-        ).then((value) {
-          setState(() {});
-        });
-
-        return "unlogged";
-      }
-      return getIt<PocketBaseController>().current_user()!.email;
+          return "unlogged";
+        }
+        return getIt<PocketBaseController>().current_user()!.email;
+      });
     });
   }
 
@@ -205,9 +205,7 @@ class HomeSelectState extends State<HomeSelect> {
                               Column(mainAxisSize: MainAxisSize.min, children: [
                         pad(CircularProgressIndicator()),
                         pad(Text("Loading")),
-                        (_loading)
-                            ? pad(Text("Loading"))
-                            : pad(Text("Not Loading")),
+                        pad(Text("Connecting account..."))
                       ]))
                     ];
                   }
