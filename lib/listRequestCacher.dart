@@ -23,6 +23,38 @@ class ListRequestCacher {
     return _cache[entry.uid] != null && !_cache[entry.uid]!.is_outdated();
   }
 
+  bool insert_cached_entry(ShoppingList list, ShoppingListEntry updated) {
+    var cached = _cache[list.uid];
+    if (cached == null) {
+      print("Invalid cache entry ${list.uid}");
+
+      return false;
+    }
+
+    updated.local = true;
+    cached.entries.add(updated);
+
+    return true;
+  }
+
+  bool update_cached_entry(ShoppingList list, ShoppingListEntry updated) {
+    var cached = _cache[list.uid];
+    if (cached == null) {
+      print("Invalid cache entry ${list.uid}");
+
+      return false;
+    }
+
+    var index =
+        cached.entries.indexWhere((element) => element.uid == updated.uid);
+    if (index == -1) {
+      return false;
+    }
+
+    cached.entries[index] = updated;
+    return true;
+  }
+
   List<ShoppingListEntry>? get_list_entries_only_cached(ShoppingList list) {
     var cached = _cache[list.uid];
     if (cached != null) {

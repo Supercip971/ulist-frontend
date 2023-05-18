@@ -19,11 +19,16 @@ class ShoppingListEntry {
   String addedBy = "";
   bool checked = false;
 
+  // local means that the entry has the current state modified  here and not from the server
+  // So that means that we should upload it to the server when we get the chance
+  bool local = false; // default local to false
+
   ShoppingListEntry(
       {this.name = "",
       this.uid = "",
       this.shoppingListId = "",
-      this.checked = false});
+      this.checked = false,
+      this.local = false});
 
   factory ShoppingListEntry.fromJson(Map<String, dynamic> responseData) {
     return ShoppingListEntry()
