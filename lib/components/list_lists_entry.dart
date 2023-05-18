@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:ulist/components/list_properties.dart';
 import 'package:ulist/list.dart';
 import 'package:ulist/pages/list_page.dart';
 import 'package:ulist/pages/dummy_list_page.dart';
@@ -35,7 +36,7 @@ class _ListOfListEntryWidget extends State<ListOfListEntryWidget>
 
     return PageRouteBuilder(
       transitionDuration: Duration(milliseconds: 0),
-      reverseTransitionDuration: Duration(milliseconds: 200),
+      reverseTransitionDuration: Duration(milliseconds: 0),
       pageBuilder: (context, animation, secondaryAnimation) => ListPage(
         id: entry.uid,
         name: entry.name,
@@ -52,13 +53,13 @@ class _ListOfListEntryWidget extends State<ListOfListEntryWidget>
 
   Future<void> _goBackAnimation() async {
     try {
-      await animationController?.reverse().orCancel;
+      await animationController?.reverse(from: 1.0);
     } on TickerCanceled {}
   }
 
   Future<void> _playAnimation() async {
     try {
-      await animationController?.forward(from: 0.0).orCancel;
+      await animationController?.forward(from: 0.0);
     } on TickerCanceled {}
   }
 
@@ -67,7 +68,9 @@ class _ListOfListEntryWidget extends State<ListOfListEntryWidget>
   void initState() {
     super.initState();
     animationController = AnimationController(
-        duration: const Duration(milliseconds: 550), vsync: this);
+        duration: const Duration(milliseconds: 550),
+        reverseDuration: const Duration(milliseconds: 550),
+        vsync: this);
 
     WidgetsBinding.instance.addPostFrameCallback(_afterLayout);
   }
@@ -101,6 +104,7 @@ class _ListOfListEntryWidget extends State<ListOfListEntryWidget>
     ).animate(CurvedAnimation(
       parent: animationController!,
       curve: Curves.easeInOutCubicEmphasized,
+      reverseCurve: Curves.easeInOutCubicEmphasized.flipped,
     ))
       ..addListener(() {
         setState(() {});
@@ -108,6 +112,7 @@ class _ListOfListEntryWidget extends State<ListOfListEntryWidget>
     final fadeAnimation = Tween(begin: 0.0, end: 1.0).animate(CurvedAnimation(
       parent: animationController!,
       curve: Curves.easeInOutCubicEmphasized,
+      reverseCurve: Curves.easeInOutCubicEmphasized.flipped,
     ))
       ..addListener(() {
         setState(() {});
@@ -126,40 +131,40 @@ class _ListOfListEntryWidget extends State<ListOfListEntryWidget>
             width: initialBounds!.size.width,
             height: initialBounds!.size.height,
             child: Material(
+                borderRadius: BorderRadius.circular(12.0),
                 color: Colors.transparent,
                 child: Stack(
                   children: [
                     Material(
-                        color: Theme.of(context).colorScheme.surface,
-                        type: MaterialType.card,
-                        surfaceTintColor:
-                            Theme.of(context).colorScheme.surfaceTint,
-                        elevation: 2.0,
-                        child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            children: [
-                              pad(Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    (Text(widget.entry.name.toString(),
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyLarge)),
-                                    Text("last edited: 20/20/20",
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodySmall),
-                                  ])),
-                              Spacer(),
-                              IconButton(
-                                  onPressed: () => {},
-                                  icon: Icon(Icons.person_add)),
-                              IconButton(
-                                  onPressed: () => {}, icon: Icon(Icons.star)),
-                              IconButton(
-                                  onPressed: () => {},
-                                  icon: Icon(Icons.more_vert))
-                            ])),
+                        child: TextButton(
+                            onPressed: () {},
+                            child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  pad(Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        (Text(widget.entry.name.toString(),
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyLarge)),
+                                        Text("last edited: 20/20/20",
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodySmall),
+                                      ])),
+                                  Spacer(),
+
+                                  // force it to stay in the top
+                                  pady(Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      ListPropertiesBar(entry: widget.entry),
+                                    ],
+                                  ))
+                                ]))),
                     FadeTransition(
                         opacity: fadeAnimation,
                         child: DummyListPage(list: widget.entry)),
@@ -191,7 +196,15 @@ class _ListOfListEntryWidget extends State<ListOfListEntryWidget>
                 Navigator.push(
                   context,
                   listEnterRoute(widget.entry, overlayAnimation),
-                ).then((value) => {});
+                ).then((value) {
+                  createOverlay();
+                  Overlay.of(context, debugRequiredFor: widget)
+                      .insert(overlayAnimation!);
+                  _goBackAnimation().then((value) {
+                    overlayAnimation?.remove();
+                    overlayAnimation = null;
+                  });
+                });
               });
             },
             style: style,
@@ -205,9 +218,7 @@ class _ListOfListEntryWidget extends State<ListOfListEntryWidget>
                         style: Theme.of(context).textTheme.bodySmall),
                   ])),
               Spacer(),
-              IconButton(onPressed: () => {}, icon: Icon(Icons.person_add)),
-              IconButton(onPressed: () => {}, icon: Icon(Icons.star)),
-              IconButton(onPressed: () => {}, icon: Icon(Icons.more_vert))
+              (ListPropertiesBar(entry: widget.entry))
             ])));
   }
 }
