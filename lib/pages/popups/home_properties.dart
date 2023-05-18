@@ -9,7 +9,7 @@ Future showPropertiesAccount(BuildContext context) async {
   return await showDialog<void>(
     context: context,
     builder: (context) => SizedBox(
-        height: 400,
+        height: 600,
         child: Dialog(
             child: pad(Column(
           mainAxisSize: MainAxisSize.min,
@@ -78,12 +78,13 @@ Future showPropertiesAccount(BuildContext context) async {
                           padx(Icon(
                             Icons.handshake,
                           )),
-                          padx(Text(
+                          Flexible(
+                              child: padx(Text(
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             softWrap: true,
                             "Licenses and legal information",
-                          ))
+                          )))
                         ],
                       )))),
                 ]))),
