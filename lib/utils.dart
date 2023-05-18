@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
-Widget pad(el, {factor = 1.0}) {
+Widget pad(el, {factor = 1.0, xfactor = 1.0, yfactor = 1.0}) {
   return Padding(
       padding: EdgeInsets.symmetric(
-          horizontal: factor * 16.0, vertical: 16.0 * factor),
+          horizontal: factor * 16.0 * xfactor,
+          vertical: 16.0 * factor * yfactor),
       child: el);
 }
 
