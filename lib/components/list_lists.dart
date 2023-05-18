@@ -85,6 +85,16 @@ Widget listListWidget(BuildContext context, AsyncSnapshot snapshot) {
   if (snapshot.hasData || snapshot.hasError) {
     return ListOfListWidget(lists: snapshot.data);
   } else {
-    return Text("Unable to load lists");
+    var children = [
+      Center(
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+        pad(CircularProgressIndicator()),
+        pad(Text("Loading")),
+        pad(Text("Getting user lists..."))
+      ]))
+    ];
+
+    return Center(
+        child: Column(mainAxisSize: MainAxisSize.min, children: children));
   }
 }
