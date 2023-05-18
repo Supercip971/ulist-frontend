@@ -1,4 +1,5 @@
 import 'dart:ffi';
+import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +15,7 @@ import '../pocket_base.dart';
 import 'package:ulist/utils.dart';
 
 class ListPage extends StatefulWidget {
-  const ListPage({super.key, required this.id, required this.name});
+  ListPage({super.key, required this.id, required this.name});
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -50,10 +51,24 @@ List<ShoppingListEntry> reorderShoppingListEntries(
   return unchecked;
 }
 
+// returns the expected index if we were to insert the entry into the list
+int shoppingListInsertedIndex(
+    ShoppingListEntry entry, List<ShoppingListEntry> entries) {
+  int index = 0;
+  for (var item in entries) {
+    if (item.checked == entry.checked) {
+      if (item.name.compareTo(entry.name) > 0) {
+        return index;
+      }
+    }
+    index++;
+  }
+  return index;
+}
+
 class _ListPage extends State<ListPage> {
   ShoppingList self = ShoppingList();
   List<ShoppingListEntry> entries = [];
-  
 
   TextEditingController addedName = TextEditingController();
 
@@ -75,13 +90,12 @@ class _ListPage extends State<ListPage> {
     return result;
   }
 
+  final GlobalKey<AnimatedListState> _key = GlobalKey();
   Future<bool> load_data(bool hard) async {
     loading = true;
 
-      
     if (!dirty && !hard) {
-      
-      if(loading){
+      if (loading) {
         setState(() {
           loading = false;
         });
@@ -94,14 +108,12 @@ class _ListPage extends State<ListPage> {
     setState(() {
       loading = true;
     });
-    var pbc = getIt<PocketBaseController>();
 
     self.uid = widget.id;
     self.name = widget.name;
     entries = await getIt<ListRequestCacher>()
         .get_list_entries_cached(self, refresh_cache: true);
 
-    
     setState(() {
       loading = false;
       dirty = false;
@@ -136,8 +148,6 @@ class _ListPage extends State<ListPage> {
     );
   }
 
-  final GlobalKey<AnimatedListState> _key = GlobalKey();
-
   Widget listEntries() {
     List<Widget> widget_entries = [];
 
@@ -149,6 +159,7 @@ class _ListPage extends State<ListPage> {
           entry: entries[i],
           onChanged: (new_entry, id, slide) {
             var prev = entries[i];
+
             entries[i].checked = new_entry.checked;
 
             upload_change(i);
@@ -210,9 +221,6 @@ class _ListPage extends State<ListPage> {
   }
 
   Widget entryLoader() {
-    self.uid = widget.id;
-    self.name = widget.name;
-
     return FutureBuilder<bool>(
       future: load_data(false),
       builder: (context, snapshot) {
@@ -229,6 +237,9 @@ class _ListPage extends State<ListPage> {
 
   @override
   Widget build(BuildContext context) {
+    self.uid = widget.id;
+    self.name = widget.name;
+
     var pbc = getIt<PocketBaseController>();
 
     return Scaffold(
@@ -265,18 +276,35 @@ class _ListPage extends State<ListPage> {
                     ),
                   ),
                   FloatingActionButton(
-                      onPressed: () => {
-                            setState(() {
-                              ShoppingListEntryPush entry =
-                                  ShoppingListEntryPush();
+                      onPressed: () {
+                        ShoppingListEntryPush entry = ShoppingListEntryPush();
 
-                              entry.checked = false;
-                              entry.name = addedName.text;
+                        String temp_uid = Random().nextInt(1000000).toString();
+                        ShoppingListEntry final_entry = ShoppingListEntry(
+                            name: addedName.text,
+                            checked: false,
+                            uid: temp_uid,
+                            local: true);
 
-                              pbc.list_entry_add(self, entry);
-                              dirty = true;
-                            })
-                          },
+                        entry.checked = false;
+                        entry.name = addedName.text;
+
+                        entries.add(final_entry);
+
+                        entries = reorderShoppingListEntries(entries);
+
+                        getIt<ListRequestCacher>()
+                            .insert_cached_entry(self, final_entry);
+
+                        pbc.list_entry_add(self, entry).then((v) {
+                          setState(() {
+                            _key.currentState!.insertItem(
+                                entries.indexOf(final_entry),
+                                duration: const Duration(milliseconds: 300));
+                            dirty = true;
+                          });
+                        });
+                      },
                       child: const Icon(Icons.add))
                 ],
               ))
