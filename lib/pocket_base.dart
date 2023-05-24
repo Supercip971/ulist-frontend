@@ -9,8 +9,10 @@ import 'services.dart';
 
 import 'user.dart';
 
-const pb_url = ("https://ulist-backend.cyp.sh/");
+// official backend
+// const pb_url = ("https://ulist-backend.cyp.sh/");
 
+const pb_url = ("http://127.0.0.1:8090");
 PocketBase pb = PocketBase(pb_url);
 
 class PocketBaseController {
@@ -21,6 +23,10 @@ class PocketBaseController {
   bool get loaded => _loaded;
 
   var logged_in = false;
+
+  Future<HealthCheck?> status() async {
+    return (await pb.health.check());
+  }
 
   Future<bool?> logout() async {
     await secureStorage.delete(key: 'auth_token');
@@ -38,6 +44,10 @@ class PocketBaseController {
 
       // we store the raw response from the server
       var tok = jsonDecode(value);
+
+      if (tok == null) {
+        return null;
+      }
       var token = tok['token'] as String?;
 
       if (token == null) {
@@ -193,6 +203,7 @@ class PocketBaseController {
             'model': pb.authStore.model.toJson()
           }));
       logged_in = true;
+
       return response.record;
     }
 
@@ -246,4 +257,25 @@ String deobfuscateError(Map res) {
   }
 
   return "Please retry later, sorry for the inconvenience.";
+}
+
+List<String> deobfuscateServerStatusError(Map res) {
+  if (!res.containsKey("ClientException")) {
+    return ["Please retry later, sorry for the inconvenience."];
+  }
+
+  Map r2 = res["ClientException"];
+  if (r2.containsKey("originalError")) {
+    List<String> r = ["Error: " + r2["originalError"] + "."];
+
+    if (r == 'Connection refused') {
+      r.add(
+          "This may be caused because you don't have an internet connection, or our servers are unavailable at the moment.");
+      r.add("Please retry later, sorry for the inconvenience.");
+    }
+
+    return r;
+  }
+
+  return ["Please retry later, sorry for the inconvenience."];
 }

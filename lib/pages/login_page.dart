@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'dart:ffi';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:pocketbase/pocketbase.dart';
 import 'package:ulist/pages/register_page.dart';
 import 'package:ulist/pocket_base.dart';
 import '../services.dart';
@@ -29,6 +31,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPage extends State<LoginPage> {
+  String server_status = "";
   final _formKey = GlobalKey<FormState>();
   TextEditingController emailController =
       TextEditingController(text: (kDebugMode) ? "supercyp971@gmail.com" : "");
@@ -38,6 +41,25 @@ class _LoginPage extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     var pbc = getIt<PocketBaseController>();
+
+    pbc.status().then((value) {
+      if (value!.code == 200) {
+        server_status = "";
+      } else {
+        setState(() {
+          server_status =
+              "Error server: " + value!.code.toString() + value!.message;
+        });
+      }
+    }).onError((error, stackTrace) {
+      setState(() {
+        if (error is ClientException) {
+          server_status = "Error server: " + error.originalError.toString();
+          return;
+        }
+        server_status = "Error server: " + error.toString();
+      });
+    });
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
@@ -49,6 +71,11 @@ class _LoginPage extends State<LoginPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
+              (server_status != "")
+                  ? Text((server_status),
+                      style: TextStyle(
+                          color: Colors.red, fontWeight: FontWeight.bold))
+                  : Container(),
               (widget.afterRegister)
                   ? Text(
                       "You're account has successfully been registered. Please login.")
@@ -112,11 +139,19 @@ class _LoginPage extends State<LoginPage> {
                               .then((value) {
                             Navigator.pop(context);
                           }).catchError((e) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                  content: Text('Login failed: ' +
-                                      e.response["message"])),
-                            );
+                            try {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    content: Text('Login failed: ' +
+                                        e.response["message"])),
+                              );
+                            } catch (e) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                    content:
+                                        Text('Login failed: ' + e.toString())),
+                              );
+                            }
                           });
                         } else {
                           ScaffoldMessenger.of(context).showSnackBar(
