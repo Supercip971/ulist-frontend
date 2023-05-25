@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'dart:isolate';
 
@@ -10,29 +11,70 @@ import 'package:ulist/pages/popups/home_properties.dart';
 import 'package:ulist/pages/popups/new_list.dart';
 import 'package:ulist/pages/register_page.dart';
 import 'package:ulist/pocket_base.dart';
+import 'package:ulist/settings.dart';
 import 'package:ulist/utils.dart';
 
 import 'services.dart';
 import 'package:ulist/pages/login_page.dart';
 
 void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   await setupServiceLocators();
+
   await getIt.allReady();
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+  @override
+  _MyAppState createState() => _MyAppState();
+}
 
+class _MyAppState extends State<MyApp> {
   // This widget is the root of your application.
+  StreamSubscription<dynamic>? sub;
+  var s = Settings.defaultSettings();
+  @override
+  void initState() {
+    super.initState();
+    sub = getIt<SettingsManager>().updatedController.stream.listen((_) {
+      setState(() {
+        print("owo");
+        s = getIt<SettingsManager>().settings;
+      });
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    sub?.cancel();
+  }
+
+  @override
+  void didUpdateWidget(covariant MyApp oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    sub?.cancel();
+
+    sub = getIt<SettingsManager>().updatedController.stream.listen((_) {
+      setState(() {
+        print("owo");
+        s = getIt<SettingsManager>().settings;
+      });
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    var v = MaterialApp(
       title: 'U list',
       debugShowCheckedModeBanner: false,
+      themeMode: s.darkMode ? ThemeMode.light : ThemeMode.dark,
       theme: ThemeData.from(
         colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.greenAccent, brightness: Brightness.dark),
+            seedColor: Colors.greenAccent,
+            brightness: s.darkMode ? Brightness.dark : Brightness.light),
         // This is the theme of your application.
         //
         // Try running your application with "flutter run". You'll see the
@@ -47,6 +89,8 @@ class MyApp extends StatelessWidget {
       ),
       home: const HomeSelect(title: 'Ulist'),
     );
+
+    return v;
   }
 }
 

@@ -1,7 +1,10 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:ulist/list.dart';
+import 'package:ulist/services.dart';
+import 'package:ulist/settings.dart';
 import 'package:ulist/utils.dart';
 
 class ListEntry extends StatefulWidget {
@@ -31,6 +34,9 @@ class ListEntry extends StatefulWidget {
 class _ListEntry extends State<ListEntry> with SingleTickerProviderStateMixin {
   AnimationController? _controller;
 
+  var set = getIt<SettingsManager>();
+
+  StreamSubscription<dynamic>? settings_sub;
   @override
   void initState() {
     super.initState();
@@ -39,11 +45,19 @@ class _ListEntry extends State<ListEntry> with SingleTickerProviderStateMixin {
       vsync: this,
     );
 
+    settings_sub = set.settingsUpdated.listen((event) {
+      setState(() {});
+    });
+
 //    _controller!.repeat(reverse: true);
   }
 
   @override
   void dispose() {
+    if (settings_sub != null) {
+      settings_sub!.cancel();
+      settings_sub = null;
+    }
     if (_controller != null) {
       _controller!.dispose();
     }
@@ -137,46 +151,48 @@ class _ListEntry extends State<ListEntry> with SingleTickerProviderStateMixin {
                 type: MaterialType.card,
                 surfaceTintColor: Theme.of(context).colorScheme.surfaceTint,
                 elevation: (widget.entry.checked) ? 0 : 2,
-                child: pad(Row(
-                  mainAxisSize: MainAxisSize.max,
-                  children: [
-                    // :eyes: for later
-                    //   RawMaterialButton(
-                    //     onPressed: () {},
-                    //     elevation: 2.0,
-                    //     fillColor: Theme.of(context).colorScheme.surface,
-                    //     child: Text("🍺", style: icon_style),
-                    //     padding: EdgeInsets.all(10.0),
-                    //     shape: CircleBorder(),
-                    //   ),
-                    Checkbox(
-                      value: widget.entry.checked,
-                      onChanged: (value) {
-                        setState(() {
-                          widget.entry.checked = !widget.entry.checked;
-                          //   upload_change(place);
-                        });
-                        if (widget.onChanged != null) {
-                          widget.onChanged!(widget.entry, widget.id, false);
-                        }
-                      },
+                child: pad(
+                    Row(
+                      mainAxisSize: MainAxisSize.max,
+                      children: [
+                        // :eyes: for later
+                        //   RawMaterialButton(
+                        //     onPressed: () {},
+                        //     elevation: 2.0,
+                        //     fillColor: Theme.of(context).colorScheme.surface,
+                        //     child: Text("🍺", style: icon_style),
+                        //     padding: EdgeInsets.all(10.0),
+                        //     shape: CircleBorder(),
+                        //   ),
+                        Checkbox(
+                          value: widget.entry.checked,
+                          onChanged: (value) {
+                            setState(() {
+                              widget.entry.checked = !widget.entry.checked;
+                              //   upload_change(place);
+                            });
+                            if (widget.onChanged != null) {
+                              widget.onChanged!(widget.entry, widget.id, false);
+                            }
+                          },
+                        ),
+                        Flexible(
+                            child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                              Container(
+                                  child: Text(widget.entry.name,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      softWrap: true,
+                                      style: ((widget.entry.checked)
+                                          ? checked_style
+                                          : default_style))),
+                              Text("user")
+                            ])),
+                      ],
                     ),
-                    Flexible(
-                        child: Column(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                          Container(
-                              child: Text(widget.entry.name,
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  softWrap: true,
-                                  style: ((widget.entry.checked)
-                                      ? checked_style
-                                      : default_style))),
-                          Text("user")
-                        ])),
-                  ],
-                )))));
+                    factor: set.compactMode ? 0.5 : 1.0))));
   }
 }

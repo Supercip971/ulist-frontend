@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:ulist/pages/account_page.dart';
 import 'package:ulist/pages/login_page.dart';
+import 'package:ulist/pages/settings_page.dart';
+import 'package:ulist/settings.dart';
 import 'package:ulist/utils.dart';
 
 Future showPropertiesAccount(BuildContext context) async {
@@ -50,8 +52,8 @@ Future showPropertiesAccount(BuildContext context) async {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>
-                                  const AccountPage(title: 'ULIST - login')),
+                              builder: (context) => const SettingsPage(
+                                  title: 'ULIST - Settings')),
                         ).then((value) {});
                       },
                       child: pad(Row(
@@ -70,7 +72,7 @@ Future showPropertiesAccount(BuildContext context) async {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  const AccountPage(title: 'ULIST - login')),
+                                  const SettingsPage(title: 'ULIST - login')),
                         ).then((value) {});
                       },
                       child: (pad(Row(
