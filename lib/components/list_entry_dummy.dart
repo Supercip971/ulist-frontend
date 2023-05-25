@@ -1,7 +1,10 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:ulist/list.dart';
+import 'package:ulist/services.dart';
+import 'package:ulist/settings.dart';
 import 'package:ulist/utils.dart';
 
 class DummyListEntry extends StatefulWidget {
@@ -10,7 +13,8 @@ class DummyListEntry extends StatefulWidget {
       required this.id,
       required this.entry,
       this.dummy = false,
-      this.onChanged = null});
+      this.onChanged = null,
+      this.forceMode = null});
 
   final void Function(ShoppingListEntry entry, int id, bool slide)? onChanged;
   // This widget is the home page of your application. It is stateful, meaning
@@ -23,6 +27,7 @@ class DummyListEntry extends StatefulWidget {
   // always marked "final".
 
   final bool dummy;
+  final double? forceMode;
   final int id;
   final ShoppingListEntry entry;
 
@@ -34,16 +39,26 @@ class _DummyListEntry extends State<DummyListEntry>
     with SingleTickerProviderStateMixin {
   AnimationController? _controller;
 
+  var set = getIt<SettingsManager>();
+
+  StreamSubscription<dynamic>? settings_sub;
   Animation<double>? _FadeAnimation;
   @override
   void initState() {
     super.initState();
 
+    settings_sub = set.settingsUpdated.listen((event) {
+      setState(() {});
+    });
 //    _controller!.repeat(reverse: true);
   }
 
   @override
   void dispose() {
+    if (settings_sub != null) {
+      settings_sub!.cancel();
+      settings_sub = null;
+    }
     if (_controller != null) {
       _controller!.dispose();
     }
@@ -78,29 +93,33 @@ class _DummyListEntry extends State<DummyListEntry>
             type: MaterialType.card,
             surfaceTintColor: Theme.of(context).colorScheme.surfaceTint,
             elevation: (this.widget.entry.checked ? 0 : 2),
-            child: pad(Row(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Checkbox(
-                  value: widget.entry.checked,
-                  onChanged: (value) {},
+            child: pad(
+                Row(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Checkbox(
+                      value: widget.entry.checked,
+                      onChanged: (value) {},
+                    ),
+                    Flexible(
+                        child: Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                          Container(
+                              child: Text(widget.entry.name,
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis,
+                                  softWrap: true,
+                                  style: ((widget.entry.checked)
+                                      ? checked_style
+                                      : default_style))),
+                          Text("user")
+                        ])),
+                  ],
                 ),
-                Flexible(
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                      Container(
-                          child: Text(widget.entry.name,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              softWrap: true,
-                              style: ((widget.entry.checked)
-                                  ? checked_style
-                                  : default_style))),
-                      Text("user")
-                    ])),
-              ],
-            ))));
+                factor: (widget.forceMode != null
+                    ? widget.forceMode!
+                    : (set.compactMode ? 0.5 : 1.0)))));
   }
 }
