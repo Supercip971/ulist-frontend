@@ -152,6 +152,10 @@ class _ListPage extends State<ListPage> {
   Widget listEntries() {
     List<Widget> widget_entries = [];
 
+    if(entries.length == 0)
+    {
+      return Center(child: Text("No entries, please create a new one using the + button"));
+    }
     entries = reorderShoppingListEntries(entries);
     for (var item in entries) {
       int i = entries.indexOf(item);

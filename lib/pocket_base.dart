@@ -160,6 +160,12 @@ class PocketBaseController {
     List<ShoppingListEntry> lists = [];
 
     print(result_list);
+
+    if(result_list["entries"] == null)
+    {
+      return [];
+    }
+
     for (var element in result_list["entries"]) {
       lists.add(ShoppingListEntry.fromJson(element));
     }
