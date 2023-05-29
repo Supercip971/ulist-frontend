@@ -124,6 +124,18 @@ class PocketBaseController {
     return true;
   }
 
+  Future<bool> list_entry_create(String name) async
+  {
+     var result_list = await pb.send(
+      "/api/v1/list",
+      method: "POST",
+      body: {
+        "name": name,
+      },
+    );
+    return true;
+  }
+
   // todo: changes so that we can accummulate changes and send them in one go
   // everything is set up for that, but I'm not familiar with dart enough to do it
 

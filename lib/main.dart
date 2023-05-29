@@ -188,10 +188,12 @@ class HomeSelectState extends State<HomeSelect> {
               (value) => {
                 if (value != null)
                   {
-                    setState(() {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text("List created")));
-                    })
+                   
+                      pbc.list_entry_create(value.name).then((_) => {
+                       setState(() { ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text("List created")));
+                      })
+                   })
                   }
               },
             )
