@@ -15,9 +15,10 @@ class _ListPropertiesBar extends State<ListPropertiesBar> {
   @override
   Widget build(BuildContext context) {
     return padx(Row(children: [
+      IconButton(onPressed: () => {}, icon: Icon(Icons.filter_list)),
       IconButton(onPressed: () => {}, icon: Icon(Icons.person_add)),
       IconButton(onPressed: () => {}, icon: Icon(Icons.star)),
-      IconButton(onPressed: () => {}, icon: Icon(Icons.more_vert))
+      IconButton(onPressed: () => {}, icon: Icon(Icons.more_vert)),
     ]));
   }
 }
