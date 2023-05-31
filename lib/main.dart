@@ -8,6 +8,7 @@ import 'package:ulist/list.dart';
 import 'package:ulist/pages/account_page.dart';
 import 'package:ulist/pages/list_page.dart';
 import 'package:ulist/pages/popups/home_properties.dart';
+import 'package:ulist/pages/popups/join_list.dart';
 import 'package:ulist/pages/popups/new_list.dart';
 import 'package:ulist/pages/register_page.dart';
 import 'package:ulist/pocket_base.dart';
@@ -38,6 +39,8 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+
+    s = getIt<SettingsManager>().settings;
     sub = getIt<SettingsManager>().updatedController.stream.listen((_) {
       setState(() {
         print("owo");
@@ -166,6 +169,40 @@ class HomeSelectState extends State<HomeSelect> {
 
   MenuSelect? selectedMenu;
 
+  void ShowListCreate() {
+    var pbc = getIt<PocketBaseController>();
+    showNewListSettings(context).then(
+      (value) => {
+        if (value != null)
+          {
+            pbc.list_entry_create(value.name).then((_) => {
+                  setState(() {
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(SnackBar(content: Text("List created")));
+                  })
+                })
+          }
+      },
+    );
+  }
+
+  void ShowListJoin() {
+    var pbc = getIt<PocketBaseController>();
+    showJoinListSettings(context).then(
+      (value) => {
+        if (value != null)
+          {
+            // pbc.list_entry_create(value.name).then((_) => {
+            //       setState(() {
+            //         ScaffoldMessenger.of(context)
+            //             .showSnackBar(SnackBar(content: Text("List created")));
+            //       })
+            //     })
+          }
+      },
+    );
+  }
+
   int _selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
@@ -182,33 +219,36 @@ class HomeSelectState extends State<HomeSelect> {
                 icon: Icon(Icons.account_circle)))
           ],
         ),
-        floatingActionButton: FloatingActionButton.extended(
-          onPressed: () => {
-            showNewListSettings(context).then(
-              (value) => {
-                if (value != null)
-                  {
-                   
-                      pbc.list_entry_create(value.name).then((_) => {
-                       setState(() { ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text("List created")));
-                      })
-                   })
-                  }
-              },
-            )
-          },
-          label: Text("Add list"),
-          icon: Icon(Icons.add),
-        ),
         body: Center(
             child: FutureBuilder<String>(
                 future: init_loader(),
                 builder: (BuildContext context, AsyncSnapshot snapshot) {
-                  List<Widget> children;
+                  List<Widget> children = [];
                   if (snapshot.hasData || snapshot.hasError) {
                     if (pbc.logged_in) {
-                      children = [get_lists(context)];
+                      children = [
+                        get_lists(context),
+                        padx(Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              padx(
+                                  TextButton(
+                                      onPressed: () => {ShowListJoin()},
+                                      child: (Row(children: [
+                                        padx(const Icon(Icons.share)),
+                                        const Text("Join a new list")
+                                      ]))),
+                                  factor: 2.0),
+                              padx(
+                                  TextButton(
+                                      onPressed: () => {ShowListCreate()},
+                                      child: (Row(children: [
+                                        padx(const Icon(Icons.add)),
+                                        const Text("Create a new list")
+                                      ]))),
+                                  factor: 2.0)
+                            ]))
+                      ];
                     } else {
                       children = [
                         Column(
