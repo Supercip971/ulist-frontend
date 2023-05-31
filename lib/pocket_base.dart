@@ -85,6 +85,22 @@ class PocketBaseController {
     return null;
   }
 
+  Future<bool> joinList(String id) async {
+    var user = current_user();
+    if (user == null) {
+      return false;
+    }
+
+    final result =
+        await pb.send("/api/v1/list-join/" + id, method: "GET", query: {});
+
+    if (result["error"].isNull) {
+      return true;
+    }
+
+    throw Exception(result["error"]);
+  }
+
   Future<List<ShoppingListRight>> current_user_lists_right() async {
     var user = current_user();
     if (user == null) {
@@ -124,9 +140,8 @@ class PocketBaseController {
     return true;
   }
 
-  Future<bool> list_entry_create(String name) async
-  {
-     var result_list = await pb.send(
+  Future<bool> list_entry_create(String name) async {
+    var result_list = await pb.send(
       "/api/v1/list",
       method: "POST",
       body: {
@@ -173,8 +188,7 @@ class PocketBaseController {
 
     print(result_list);
 
-    if(result_list["entries"] == null)
-    {
+    if (result_list["entries"] == null) {
       return [];
     }
 
