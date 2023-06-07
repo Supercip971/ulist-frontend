@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ulist/list.dart';
+import 'package:ulist/pages/popups/invite.dart';
 import 'package:ulist/utils.dart';
 
 class ListPropertiesBar extends StatefulWidget {
@@ -16,7 +17,9 @@ class _ListPropertiesBar extends State<ListPropertiesBar> {
   Widget build(BuildContext context) {
     return padx(Row(children: [
       IconButton(onPressed: () => {}, icon: Icon(Icons.filter_list)),
-      IconButton(onPressed: () => {}, icon: Icon(Icons.person_add)),
+      IconButton(
+          onPressed: () => {showListInvite(context, widget.entry)},
+          icon: Icon(Icons.person_add)),
       IconButton(onPressed: () => {}, icon: Icon(Icons.star)),
       IconButton(onPressed: () => {}, icon: Icon(Icons.more_vert)),
     ]));
