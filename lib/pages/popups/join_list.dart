@@ -15,7 +15,7 @@ Future<JoinListResult?> showJoinListSettings(BuildContext context) async {
 
   final TextEditingController _NameController = TextEditingController();
 
-  return await showDialog<JoinListResult>(
+  return await showDialog<JoinListResult?>(
       context: context,
       builder: (context) {
         String error_code = "";
@@ -62,8 +62,9 @@ Future<JoinListResult?> showJoinListSettings(BuildContext context) async {
                           onPressed: () {
                             var pbc = getIt<PocketBaseController>();
                             pbc.joinList(_NameController.text).then((value) {
-                              Navigator.pop(context, value);
+                              Navigator.pop(context);
                             }).catchError((error) {
+                              print(error);
                               setState(() {
                                 error_code = error.response["message"]
                                     .toString(); // error.response["message"].toString();
