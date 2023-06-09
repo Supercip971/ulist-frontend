@@ -76,7 +76,7 @@ class _MyAppState extends State<MyApp> {
       themeMode: s.darkMode ? ThemeMode.light : ThemeMode.dark,
       theme: ThemeData.from(
         colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.greenAccent,
+            seedColor: Colors.purpleAccent,
             brightness: s.darkMode ? Brightness.dark : Brightness.light),
         // This is the theme of your application.
         //
@@ -186,21 +186,9 @@ class HomeSelectState extends State<HomeSelect> {
     );
   }
 
-  void ShowListJoin() {
+  Future<void> ShowListJoin() async {
     var pbc = getIt<PocketBaseController>();
-    showJoinListSettings(context).then(
-      (value) => {
-        if (value != null)
-          {
-            // pbc.list_entry_create(value.name).then((_) => {
-            //       setState(() {
-            //         ScaffoldMessenger.of(context)
-            //             .showSnackBar(SnackBar(content: Text("List created")));
-            //       })
-            //     })
-          }
-      },
-    );
+    await showJoinListSettings(context);
   }
 
   int _selectedIndex = 0;
@@ -220,84 +208,99 @@ class HomeSelectState extends State<HomeSelect> {
           ],
         ),
         body: Center(
-            child: FutureBuilder<String>(
-                future: init_loader(),
-                builder: (BuildContext context, AsyncSnapshot snapshot) {
-                  List<Widget> children = [];
-                  if (snapshot.hasData || snapshot.hasError) {
-                    if (pbc.logged_in) {
-                      children = [
-                        get_lists(context),
-                        padx(Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              padx(
-                                  TextButton(
-                                      onPressed: () => {ShowListJoin()},
-                                      child: (Row(children: [
-                                        padx(const Icon(Icons.share)),
-                                        const Text("Join a new list")
-                                      ]))),
-                                  factor: 2.0),
-                              padx(
-                                  TextButton(
-                                      onPressed: () => {ShowListCreate()},
-                                      child: (Row(children: [
-                                        padx(const Icon(Icons.add)),
-                                        const Text("Create a new list")
-                                      ]))),
-                                  factor: 2.0)
-                            ]))
-                      ];
-                    } else {
-                      children = [
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            pad(ElevatedButton(
-                                onPressed: () => {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const LoginPage(
-                                                    title: 'U list - login')),
-                                      ).then((value) => {setState(() {})})
-                                    },
-                                child: Text("Login"))),
-                            pad(ElevatedButton(
-                                onPressed: () => {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                const RegisterPage(
-                                                    title:
-                                                        'U list - register')),
-                                      ).then((value) => {setState(() {})})
-                                    },
-                                child: Text("Register")))
-                          ],
-                        )
-                      ];
-                    }
-                    //     children = [
-                    //       Center(child: pad(Text("Loaded ! ${snapshot.data}"))),
-                    //     ];
-                  } else {
-                    children = [
-                      Center(
-                          child:
-                              Column(mainAxisSize: MainAxisSize.min, children: [
-                        pad(CircularProgressIndicator()),
-                        pad(Text("Loading")),
-                        pad(Text("Connecting account..."))
-                      ]))
-                    ];
-                  }
-                  return Center(
-                      child: Column(
-                          mainAxisSize: MainAxisSize.min, children: children));
-                })));
+            child: SingleChildScrollView(
+                child: pady(Center(
+                    child: FutureBuilder<String>(
+                        future: init_loader(),
+                        builder:
+                            (BuildContext context, AsyncSnapshot snapshot) {
+                          List<Widget> children = [];
+                          if (snapshot.hasData || snapshot.hasError) {
+                            if (pbc.logged_in) {
+                              children = [
+                                get_lists(context),
+                                padx(Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      padx(
+                                          TextButton(
+                                              onPressed: () => {
+                                                    ShowListJoin().then(
+                                                      (value) {
+                                                        setState(() {});
+                                                      },
+                                                    )
+                                                  },
+                                              child: (Row(children: [
+                                                padx(const Icon(Icons.share)),
+                                                const Text("Join a new list")
+                                              ]))),
+                                          factor: 2.0),
+                                      padx(
+                                          TextButton(
+                                              onPressed: () =>
+                                                  {ShowListCreate()},
+                                              child: (Row(children: [
+                                                padx(const Icon(Icons.add)),
+                                                const Text("Create a new list")
+                                              ]))),
+                                          factor: 2.0)
+                                    ]))
+                              ];
+                            } else {
+                              children = [
+                                Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    pad(ElevatedButton(
+                                        onPressed: () => {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        const LoginPage(
+                                                            title:
+                                                                'U list - login')),
+                                              ).then(
+                                                  (value) => {setState(() {})})
+                                            },
+                                        child: Text("Login"))),
+                                    pad(ElevatedButton(
+                                        onPressed: () => {
+                                              Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: (context) =>
+                                                        const RegisterPage(
+                                                            title:
+                                                                'U list - register')),
+                                              ).then(
+                                                  (value) => {setState(() {})})
+                                            },
+                                        child: Text("Register")))
+                                  ],
+                                )
+                              ];
+                            }
+                            //     children = [
+                            //       Center(child: pad(Text("Loaded ! ${snapshot.data}"))),
+                            //     ];
+                          } else {
+                            children = [
+                              Center(
+                                  child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                    pad(CircularProgressIndicator()),
+                                    pad(Text("Loading")),
+                                    pad(Text("Connecting account..."))
+                                  ]))
+                            ];
+                          }
+                          return Center(
+                              child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: children));
+                        }))))));
   }
 }
