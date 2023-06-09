@@ -128,3 +128,44 @@ class ShoppingListUpdate {
         'pushes': pushes.map((e) => e.toJson()).toList(),
       };
 }
+
+/*
+type ListShare struct {
+	models.BaseModel
+
+	List           string         `db:"list" json:"list"`
+	SharedBy       string         `db:"sharedBy" json:"sharedBy"`
+	ExpirationDate types.DateTime `db:"expirationDate" json:"expirationDate"`
+	Identifier     string         `db:"identificator" json:"identificator"`
+}
+
+
+*/
+class ShoppingListShare {
+  String listId = ""; // list
+  String sharedBy = ""; // sharedBy
+  String expirationDate = ""; // expirationDate
+  String identificator = ""; // identifier
+
+  ShoppingListShare({
+    this.listId = "",
+    this.sharedBy = "",
+    this.expirationDate = "",
+    this.identificator = "",
+  });
+
+  factory ShoppingListShare.fromJson(Map<String, dynamic> responseData) {
+    return ShoppingListShare()
+      ..listId = responseData['list']
+      ..sharedBy = responseData['sharedBy']
+      ..expirationDate = responseData['expirationDate']
+      ..identificator = responseData['identificator'];
+  }
+
+  Map<String, dynamic> toJson() => {
+        'list': listId,
+        'sharedBy': sharedBy,
+        'expirationDate': expirationDate,
+        'identificator': identificator,
+      };
+}
