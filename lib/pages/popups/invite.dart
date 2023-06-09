@@ -89,20 +89,17 @@ Future<ListInviteResult?> showListInvite(
                       FilledButton(
                           onPressed: () {
                             var pbc = getIt<PocketBaseController>();
-                            pbc.joinList(_NameController.text).then((value) {
-                              Navigator.pop(context, value);
-                            }).catchError((error) {
-                              setState(() {
-                                error_code = error.response["message"]
-                                    .toString(); // error.response["message"].toString();
-                              });
+                            pbc
+                                .list_entry_create_invite(
+                                    target, invalidation_date)
+                                .then((value) {
+                              print(value);
+                              Navigator.pop(
+                                  context, ListInviteResult()..code = value);
                             });
                           },
                           child: Row(
-                            children: [
-                              Icon(Icons.share),
-                              Text("Create invitation code")
-                            ],
+                            children: [Icon(Icons.share), Text("Create")],
                           )),
                     ])
                   ])),

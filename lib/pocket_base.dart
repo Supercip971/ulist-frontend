@@ -10,9 +10,9 @@ import 'services.dart';
 import 'user.dart';
 
 // official backend
-// const pb_url = ("https://ulist-backend.cyp.sh/");
+const pb_url = ("https://ulist-backend.cyp.sh/");
 
-const pb_url = ("http://127.0.0.1:8090");
+//const pb_url = ("http://127.0.0.1:8090");
 PocketBase pb = PocketBase(pb_url);
 
 class PocketBaseController {
@@ -94,6 +94,9 @@ class PocketBaseController {
     final result =
         await pb.send("/api/v1/list-join/" + id, method: "GET", query: {});
 
+    if (result["error"] == null) {
+      return true;
+    }
     if (result["error"].isNull) {
       return true;
     }
@@ -101,6 +104,8 @@ class PocketBaseController {
     throw Exception(result["error"]);
   }
 
+  // TODO: add each share the list is currently having
+  // TODO: show how a user joined the list
   Future<List<ShoppingListRight>> current_user_lists_right() async {
     var user = current_user();
     if (user == null) {
@@ -162,6 +167,25 @@ class PocketBaseController {
     send_list_changes(from, update);
 
     return true;
+  }
+
+  Future<String> list_entry_create_invite(
+      ShoppingList from, DateTime invalidation_date) async {
+    ShoppingListShare share = ShoppingListShare(
+        listId: from.uid,
+        sharedBy: current_user()!.userId,
+        expirationDate: invalidation_date.toUtc().toString(),
+        identificator: "");
+
+    var result_list = await pb.send(
+      "/api/v1/list-invite",
+      method: "POST",
+      body: share.toJson(),
+    );
+
+    String result = (result_list);
+
+    return result;
   }
 
   Future<bool> list_entry_update(
