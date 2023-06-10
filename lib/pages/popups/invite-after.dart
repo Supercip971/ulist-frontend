@@ -26,20 +26,44 @@ Future<bool?> showListInvitationCode(
                 child: Dialog(
                     child:
                         pad(Column(mainAxisSize: MainAxisSize.min, children: [
-                  Row(mainAxisSize: MainAxisSize.min, children: [
-                    pad(
-                      Text("Successfully created an invitation code !",
-                          style: style.apply(
-                              color: Theme.of(context)
-                                  .colorScheme
-                                  .onPrimaryContainer)),
-                    )
-                  ]),
+                  pad(Row(children: [
+                    Flexible(
+                        child: Text("Successfully created an invitation code !",
+                            style: style.apply(
+                                color: Theme.of(context)
+                                    .colorScheme
+                                    .onPrimaryContainer))),
+                  ])),
                   pad(Text("The invite code is:")),
                   Material(
                       borderRadius: BorderRadius.circular(12),
                       color: Theme.of(context).colorScheme.primaryContainer,
                       child: pad(SelectableText(code))),
+                  pady(
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        padx(
+                          FilledButton(
+                              onPressed: () {
+                                Clipboard.setData(ClipboardData(text: code));
+                              },
+                              child: const Row(
+                                children: [Icon(Icons.copy), Text("Copy")],
+                              )),
+                        ),
+                        padx(
+                          FilledButton(
+                              onPressed: () {
+                                Share.share(code);
+                              },
+                              child: const Row(
+                                children: [Icon(Icons.share), Text("Share")],
+                              )),
+                        )
+                      ],
+                    ),
+                  ),
                   pad(Column(
                     children: [
                       const Row(children: [
@@ -55,24 +79,6 @@ Future<bool?> showListInvitationCode(
                               child: padx(const Text(
                                 "Close",
                               )))),
-                          padx(
-                            FilledButton(
-                                onPressed: () {
-                                  Clipboard.setData(ClipboardData(text: code));
-                                },
-                                child: const Row(
-                                  children: [Icon(Icons.copy), Text("Copy")],
-                                )),
-                          ),
-                          padx(
-                            FilledButton(
-                                onPressed: () {
-                                  Share.share(code);
-                                },
-                                child: const Row(
-                                  children: [Icon(Icons.share), Text("Share")],
-                                )),
-                          )
                         ])
                       ])),
                     ],
