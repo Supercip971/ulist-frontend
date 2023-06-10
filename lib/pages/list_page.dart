@@ -301,14 +301,12 @@ class _ListPage extends State<ListPage> {
 
                         getIt<ListRequestCacher>()
                             .insert_cached_entry(self, final_entry);
-
+                        _key.currentState!.insertItem(
+                            entries.indexOf(final_entry),
+                            duration: const Duration(milliseconds: 300));
+                        dirty = true;
                         pbc.list_entry_add(self, entry).then((v) {
-                          setState(() {
-                            _key.currentState!.insertItem(
-                                entries.indexOf(final_entry),
-                                duration: const Duration(milliseconds: 300));
-                            dirty = true;
-                          });
+                          setState(() {});
                         });
                       },
                       child: const Icon(Icons.add))
