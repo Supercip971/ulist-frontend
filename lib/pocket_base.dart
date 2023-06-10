@@ -125,7 +125,14 @@ class PocketBaseController {
     List<ShoppingListRight> lists = [];
 
     for (var element in data) {
+      ShoppingListRight list = ShoppingListRight.fromJson(element);
+      ShoppingListRight final_entry = lists.firstWhere(
+          (element) => element.shoppingListId == list.shoppingListId,
+          orElse: () => ShoppingListRight(uid: ""));
+
+      if (final_entry.uid == "") {
       lists.add(ShoppingListRight.fromJson(element));
+      }
     }
     return lists;
   }
