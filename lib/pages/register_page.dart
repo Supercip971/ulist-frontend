@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:ulist/pages/login_page.dart';
 import 'package:ulist/pocket_base.dart';
@@ -31,11 +32,11 @@ class _RegisterPage extends State<RegisterPage> {
 
   TextEditingController usernameController = TextEditingController(text: 'cyp');
   TextEditingController emailController =
-      TextEditingController(text: "supercyp971@gmail.com");
+      TextEditingController(text: (kDebugMode) ? "supercyp971@gmail.com" : "");
   TextEditingController passwordController =
-      TextEditingController(text: 'owoowoowo');
+      TextEditingController(text: (kDebugMode) ? 'test123123' : "");
   TextEditingController passwordConfirmController =
-      TextEditingController(text: 'owoowoowo');
+      TextEditingController(text: (kDebugMode) ? 'test123123' : "");
 
   var currentError = "";
   @override
