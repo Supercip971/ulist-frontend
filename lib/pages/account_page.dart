@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:ulist/pages/login_page.dart';
 import 'package:ulist/pocket_base.dart';
+import 'package:ulist/user.dart';
 import '../services.dart';
 import '../pocket_base.dart';
 
@@ -26,19 +27,72 @@ class AccountPage extends StatefulWidget {
   State<AccountPage> createState() => _AccountPage();
 }
 
+Widget proUserBadge(BuildContext context) {
+  return padx(
+      Material(
+		  elevation: 0.5,
+		  shape: RoundedRectangleBorder(
+			  borderRadius: BorderRadius.circular(69.0),
+			  side: BorderSide(
+				  color: Theme.of(context).colorScheme.surfaceTint,
+				  width: 1.0,
+			  )),
+
+		  color: Theme.of(context).colorScheme.surface,
+          child: pad(
+			  xfactor: 1.0,
+			  yfactor: 0.2,
+			  Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [padx(Icon(Icons.diamond_outlined), factor: 0.1), (Text("PRO", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)))])
+			  )
+
+		  ),
+      factor: 1.5);
+}
+
+Widget DisplayUsername(BuildContext context, User? user) {
+  var pbc = getIt<PocketBaseController>();
+  var name = user!.name;
+  return pad(Center(
+      child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+    Icon(Icons.account_circle, size: 100),
+    Row(children: [
+      Text(
+        "$name",
+        style: TextStyle(fontSize: 24),
+        textAlign: TextAlign.center,
+      ),
+      FutureBuilder<int>(
+          future: pbc.user_premium_level(),
+          builder: (context, snapshot) {
+            if (context == null) {
+              return Text("Loading...");
+            }
+            if (snapshot.hasData) {
+              if (snapshot.data != 0) {
+                return proUserBadge(context);
+              }
+            }
+
+            return Icon(Icons.close);
+          })
+    ])
+  ])));
+}
+
 class _AccountPage extends State<AccountPage> {
   final _formKey = GlobalKey<FormState>();
 
   var currentError = "";
+
   @override
   Widget build(BuildContext context) {
     var pbc = getIt<PocketBaseController>();
+
     var user = pbc.current_user();
 
-    var username = user!.name;
     var mail = user!.email;
-
-    var pro = user.pro ? "Yes" : "No";
 
     return Scaffold(
         appBar: AppBar(
@@ -63,18 +117,7 @@ class _AccountPage extends State<AccountPage> {
 
                             // USERNAME
                             children: [
-                              pad(Center(
-                                  child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Icon(Icons.account_circle, size: 100),
-                                  Text(
-                                    "$username",
-                                    style: TextStyle(fontSize: 24),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                ],
-                              ))),
+                              DisplayUsername(context, user),
                               pad(Row(
                                 children: [
                                   padx(Icon(Icons.email)),
