@@ -133,6 +133,54 @@ class _ListPropertiesPage extends State<ListPropertiesPage> {
     );
   }
 
+  Widget listPropertiesPanel(BuildContext context) {
+    ButtonStyle st = ButtonStyle(
+      foregroundColor:
+          MaterialStateProperty.all<Color>(Theme.of(context).colorScheme.error),
+    );
+    List<Widget> actions = [
+      TextButton.icon(
+        onPressed: () {},
+        label: Text("Rename"),
+        icon: Icon(Icons.edit),
+      ),
+      TextButton.icon(
+        onPressed: () {},
+        label: Text("Share"),
+        icon: Icon(Icons.share),
+      ),
+      TextButton.icon(
+          onPressed: () {},
+          label: Text("Quit"),
+          icon: Icon(Icons.close),
+          style: st),
+      TextButton.icon(
+          onPressed: () {},
+          label: Text("Delete list"),
+          icon: Icon(Icons.delete),
+          style: st),
+    ];
+
+    List<Widget> f2 = [];
+    for (var action in actions) {
+      f2.add(padx(Align(alignment: Alignment.centerLeft, child: action)));
+    }
+    return Card(
+      elevation: 1.0,
+      shape: RoundedRectangleBorder(
+        side: BorderSide(
+          color: Theme.of(context).colorScheme.outline,
+        ),
+        borderRadius: const BorderRadius.all(Radius.circular(12)),
+      ),
+      child: pady(Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: f2)),
+    );
+  }
+
   Widget listUsersPanel(BuildContext context) {
     List<ListUser> users = [
       ListUser(user: const User(name: "david"), is_administrator: true),
@@ -176,6 +224,7 @@ class _ListPropertiesPage extends State<ListPropertiesPage> {
                   children: [
                     pady(Text("List properties",
                         style: Theme.of(context).textTheme.headlineSmall)),
+                    listPropertiesPanel(context),
                     pady(Text("List shares",
                         style: Theme.of(context).textTheme.headlineSmall)),
                     pady(Text("List users",
@@ -193,12 +242,12 @@ class _ListPropertiesPage extends State<ListPropertiesPage> {
 
     return Scaffold(
         appBar: AppBar(
-            title: Row(children: [
-              Text(self.name.toString() + " - properties",
-                  style: Theme.of(context).textTheme.headlineSmall),
-              if (loading) padx(const CircularProgressIndicator(), factor: 3.0)
-            ]),
-            actions: [ListPropertiesBar(entry: self)]),
+          title: Row(children: [
+            Text(self.name.toString() + " - properties",
+                style: Theme.of(context).textTheme.headlineSmall),
+            if (loading) padx(const CircularProgressIndicator(), factor: 3.0)
+          ]),
+        ),
         body: Center(
             child: FutureBuilder<bool>(
           future: load_data(false),
