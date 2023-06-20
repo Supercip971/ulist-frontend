@@ -141,19 +141,21 @@ class _ListOfListEntryWidget extends State<ListOfListEntryWidget>
                             child: Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  pad(Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: [
-                                        (Text(widget.entry.name.toString(),
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyLarge)),
-                                        Text("last edited: 20/20/20",
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodySmall),
-                                      ])),
+                                  pad(
+                                    Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          (Text(widget.entry.name.toString(),
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyLarge)),
+                                          Text("last edited: 20/20/20",
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodySmall),
+                                        ]),
+                                  ),
                                   Spacer(),
 
                                   // force it to stay in the top
