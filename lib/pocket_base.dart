@@ -10,9 +10,9 @@ import 'services.dart';
 import 'user.dart';
 
 // official backend
-const pb_url = ("https://ulist-backend.cyp.sh/");
+//const pb_url = ("https://ulist-backend.cyp.sh/");
 
-//const pb_url = ("http://127.0.0.1:8090");
+const pb_url = ("http://127.0.0.1:8090");
 PocketBase pb = PocketBase(pb_url);
 
 class PocketBaseController {
@@ -80,9 +80,30 @@ class PocketBaseController {
 
   User? current_user() {
     if (pb.authStore.isValid) {
-      return User.fromJson(pb.authStore.model.toJson());
+      var res = User.fromJson(pb.authStore.model.toJson());
+
+      return User(userId: res.userId, name: res.name, email: res.email);
     }
     return null;
+  }
+
+  Future<int>? user_premium_level() async {
+    var user = current_user();
+    if (user == null) {
+      print("user is null");
+      return 0;
+    }
+
+    final result =
+        await pb.send("/api/v1/subscription", method: "GET", query: {});
+
+    /*
+	if (result["error"] != null) {
+		print("there was an error while trying to get the subscription");
+		throw Exception(result["error"]);
+	}*/
+
+    return int.parse(result.toString());
   }
 
   Future<bool> joinList(String id) async {
@@ -131,7 +152,7 @@ class PocketBaseController {
           orElse: () => ShoppingListRight(uid: ""));
 
       if (final_entry.uid == "") {
-      lists.add(ShoppingListRight.fromJson(element));
+        lists.add(ShoppingListRight.fromJson(element));
       }
     }
     return lists;
