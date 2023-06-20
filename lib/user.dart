@@ -3,22 +3,22 @@ import 'package:pocketbase/pocketbase.dart';
 final pb = PocketBase("http://127.0.0.1:8090");
 
 class User {
-  String userId;
-  String name;
-  String email;
-  String type;
-  String token;
-  String renewalToken;
-  bool pro;
+  final String userId;
+  final String name;
+  final String email;
+  final String type;
+  final String token;
+  final String renewalToken;
+  final int premiumLevel;
 
-  User(
+  const User(
       {this.userId = "-1",
       this.name = "",
       this.email = "",
       this.type = "",
       this.token = "",
       this.renewalToken = "",
-      this.pro = false});
+      this.premiumLevel= 0});
 
   bool isNull() {
     return (userId) == "-1";
@@ -38,4 +38,14 @@ class User {
         //   renewalToken: responseData['renewal_token']);
         );
   }
+}
+
+class ListUser {
+  User user;
+  bool is_administrator;
+  bool is_owner;
+  ListUser(
+      {this.user = const User(),
+      this.is_administrator = false,
+      this.is_owner = false});
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ulist/list.dart';
+import 'package:ulist/pages/list_properties.dart';
 import 'package:ulist/pages/popups/invite-after.dart';
 import 'package:ulist/pages/popups/invite.dart';
 import 'package:ulist/utils.dart';
@@ -31,7 +32,15 @@ class _ListPropertiesBar extends State<ListPropertiesBar> {
               },
           icon: Icon(Icons.person_add)),
       IconButton(onPressed: () => {}, icon: Icon(Icons.star)),
-      IconButton(onPressed: () => {}, icon: Icon(Icons.more_vert)),
+      IconButton(
+          onPressed: () => {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                            ListPropertiesPage(id: widget.entry.uid)))
+              },
+          icon: Icon(Icons.more_vert)),
     ]));
   }
 }
