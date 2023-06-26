@@ -36,6 +36,7 @@ class ListPropertiesPage extends StatefulWidget {
 
 class _ListPropertiesPage extends State<ListPropertiesPage> {
   ShoppingList self = ShoppingList();
+  ShoppingListInformation props = ShoppingListInformation();
 
   bool dirty = true;
   bool loading = true;
@@ -61,6 +62,13 @@ class _ListPropertiesPage extends State<ListPropertiesPage> {
 
     self.uid = widget.id;
     self = await getIt<PocketBaseController>().get_list(self.uid);
+    var res = await getIt<PocketBaseController>().get_list_props(self.uid);
+    if (res == null) {
+      throw Exception("Could not load list properties");
+    }
+
+    props = res;
+
     setState(() {
       loading = false;
       dirty = false;
@@ -68,16 +76,16 @@ class _ListPropertiesPage extends State<ListPropertiesPage> {
     return true;
   }
 
-  Widget listUserEntry(BuildContext context, ListUser user) {
+  Widget listUserEntry(BuildContext context, ShoppingListPropsUser user) {
     return ListTile(
       title: Row(children: [
-        Text(user.user.name),
-        user.is_owner
+        Text(user.name),
+        user.owner
             ? padx(Text(
                 "(owner)",
                 style: Theme.of(context).textTheme.bodySmall,
               ))
-            : user.is_administrator
+            : user.owner
                 ? padx(Text(
                     "(administrator)",
                     style: Theme.of(context).textTheme.bodySmall,
@@ -94,7 +102,7 @@ class _ListPropertiesPage extends State<ListPropertiesPage> {
                   child: pad(Column(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      pady(Text(user.user.name,
+                      pady(Text(user.name,
                           style: Theme.of(context).textTheme.titleMedium)),
 
                       // -----
@@ -182,14 +190,12 @@ class _ListPropertiesPage extends State<ListPropertiesPage> {
   }
 
   Widget listUsersPanel(BuildContext context) {
-    List<ListUser> users = [
-      ListUser(user: const User(name: "david"), is_administrator: true),
-      ListUser(user: const User(name: "Bob"), is_administrator: false),
-      ListUser(
-          user: const User(name: "Mom"),
-          is_administrator: false,
-          is_owner: true),
+    List<ShoppingListPropsUser> users = [
     ];
+
+	for (var user in props.users) {
+		users.add(user);
+	}
 
     List<Widget> usersWidgets = [];
 
