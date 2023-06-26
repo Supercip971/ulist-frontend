@@ -40,12 +40,3 @@ class User {
   }
 }
 
-class ListUser {
-  User user;
-  bool is_administrator;
-  bool is_owner;
-  ListUser(
-      {this.user = const User(),
-      this.is_administrator = false,
-      this.is_owner = false});
-}

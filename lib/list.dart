@@ -59,6 +59,13 @@ class ShoppingListRight {
       ..owner = responseData['owner']
       ..uid = responseData['id'];
   }
+
+  Map<String, dynamic> toJson() => {
+		'userId': userId,
+		'listId': shoppingListId,
+		'owner': owner,
+		'id': uid,
+	  };
 }
 
 class ShoppingListEntryUpdate {
@@ -169,3 +176,59 @@ class ShoppingListShare {
         'identificator': identificator,
       };
 }
+
+
+
+class ShoppingListPropsShare {
+  String sharedBy = ""; // sharedBy
+  String expirationDate = ""; // expirationDate
+  String identificator = ""; // identifier
+
+  ShoppingListPropsShare({
+    this.sharedBy = "",
+    this.expirationDate = "",
+    this.identificator = "",
+  });
+
+  factory ShoppingListPropsShare.fromJson(Map<String, dynamic> responseData) {
+    return ShoppingListPropsShare()
+      ..sharedBy = responseData['sharedBy']
+      ..expirationDate = responseData['expirationDate']
+      ..identificator = responseData['identificator'];
+  }
+}
+
+class ShoppingListPropsUser {
+  String name = ""; 
+  String id = ""; 
+  bool owner = false;  
+
+  ShoppingListPropsUser({
+    this.name = "",
+    this.id = "",
+    this.owner = false, 
+  });
+
+  factory ShoppingListPropsUser.fromJson(Map<String, dynamic> responseData) {
+    return ShoppingListPropsUser()
+      ..name = responseData['name']
+      ..id = responseData['id']
+      ..owner = responseData['owner'];
+  }
+
+}
+
+class ShoppingListInformation {
+	List<ShoppingListPropsShare> shares = [];
+	List<ShoppingListPropsUser> users = [];
+	
+	ShoppingListInformation({this.shares = const [], this.users = const []});
+
+	factory ShoppingListInformation.fromJson(Map<String, dynamic> responseData) {
+		print(responseData);
+		return ShoppingListInformation()
+			..users = (responseData['users'] as List).map((e) => ShoppingListPropsUser.fromJson(e)).toList()
+			..shares = (responseData['shares'] as List).map((e) => ShoppingListPropsShare.fromJson(e)).toList();
+	}
+}
+

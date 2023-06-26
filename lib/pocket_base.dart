@@ -309,6 +309,19 @@ class PocketBaseController {
     logged_in = false;
     return response;
   }
+
+
+  Future<ShoppingListInformation?> get_list_props(String id) async {
+	var result_list = await pb.send(
+	  "/api/v1/list-properties",
+	  method: "GET",
+	  query: {
+		"id": id,
+	  },
+	);
+
+	return ShoppingListInformation.fromJson(result_list);
+  }
 }
 
 String deobfuscateError(Map res) {
