@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:ulist/components/list_tag.dart';
 import 'package:ulist/list.dart';
 import 'package:ulist/services.dart';
 import 'package:ulist/settings.dart';
@@ -84,6 +85,27 @@ class _ListEntry extends State<ListEntry> with SingleTickerProviderStateMixin {
         decoration: TextDecoration.lineThrough, color: Colors.grey);
 
     last_value = widget.entry.checked;
+	
+
+	List<String> tags = widget.entry.tags;
+	List<Widget> tags_widgets = [];
+	for (int i = 0; i < tags.length; i++) {
+		tags_widgets.add(
+			Padding(
+				padding: EdgeInsets.only(right: 4),
+				child: 
+					
+					ListTagButton(
+						name: tags[i],
+						callback: () {
+							setState(() {
+							});
+						},
+					),
+				    
+					)
+			);
+	}
 
     return Material(
         child: Dismissible(
@@ -152,8 +174,13 @@ class _ListEntry extends State<ListEntry> with SingleTickerProviderStateMixin {
                 surfaceTintColor: Theme.of(context).colorScheme.surfaceTint,
                 elevation: (widget.entry.checked) ? 0 : 2,
                 child: pad(
+					Row( 
+						mainAxisSize: MainAxisSize.max,
+						mainAxisAlignment: MainAxisAlignment.spaceBetween,
+						children: [
                     Row(
-                      mainAxisSize: MainAxisSize.max,
+                      mainAxisSize: MainAxisSize.min,
+					  mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         // :eyes: for later
                         //   RawMaterialButton(
@@ -191,6 +218,11 @@ class _ListEntry extends State<ListEntry> with SingleTickerProviderStateMixin {
                                           : default_style))),
                               Text("user")
                             ])),
+						],),
+						tags_widgets.length > 0 ?  Row(
+							children: tags_widgets,
+						)	 : Container(),
+						
                       ],
                     ),
                     factor: set.compactMode ? 0.5 : 1.0))));

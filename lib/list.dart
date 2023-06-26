@@ -3,12 +3,14 @@ import 'dart:convert';
 class ShoppingList {
   String name = "";
   String uid = "";
-  ShoppingList({this.name = "", this.uid = ""});
+  List<String> tags = [];
+  ShoppingList({this.name = "", this.uid = "", this.tags = const ["store", "store2"]});
 
   factory ShoppingList.fromJson(Map<String, dynamic> responseData) {
     return ShoppingList()
       ..name = responseData['name']
-      ..uid = responseData['id'];
+      ..uid = responseData['id']
+	  ..tags = ["store", "store2"];
   }
 }
 
@@ -23,12 +25,15 @@ class ShoppingListEntry {
   // So that means that we should upload it to the server when we get the chance
   bool local = false; // default local to false
 
+  List<String> tags = [];
+
   ShoppingListEntry(
       {this.name = "",
       this.uid = "",
       this.shoppingListId = "",
       this.checked = false,
-      this.local = false});
+      this.local = false, 
+	  this.tags = const ["store", "store2"]});
 
   factory ShoppingListEntry.fromJson(Map<String, dynamic> responseData) {
     return ShoppingListEntry()
