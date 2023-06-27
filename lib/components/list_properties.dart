@@ -6,8 +6,10 @@ import 'package:ulist/pages/popups/invite.dart';
 import 'package:ulist/utils.dart';
 
 class ListPropertiesBar extends StatefulWidget {
-  const ListPropertiesBar({Key? key, required this.entry}) : super(key: key);
+  const ListPropertiesBar({Key? key, required this.entry, this.startFilter = null}) : super(key: key);
 
+  final Function(BuildContext)? startFilter;
+	
   final ShoppingList entry;
   @override
   State<ListPropertiesBar> createState() => _ListPropertiesBar();
@@ -18,7 +20,12 @@ class _ListPropertiesBar extends State<ListPropertiesBar> {
   @override
   Widget build(BuildContext context) {
     return padx(Row(children: [
-      IconButton(onPressed: () => {}, icon: Icon(Icons.filter_list)),
+      IconButton(onPressed: () => {
+		if(widget.startFilter != null) 
+		{
+			widget.startFilter!(context)	
+		}
+	  }, icon: Icon(Icons.filter_list)),
       IconButton(
           onPressed: () => {
                 showListInvite(context, widget.entry).then(
@@ -31,7 +38,6 @@ class _ListPropertiesBar extends State<ListPropertiesBar> {
                 )
               },
           icon: Icon(Icons.person_add)),
-      IconButton(onPressed: () => {}, icon: Icon(Icons.star)),
       IconButton(
           onPressed: () => {
                 Navigator.push(

@@ -29,6 +29,7 @@ class _ListOfListWidget extends State<ListOfListWidget>
           builder: (context) => ListPage(
                 id: entry.uid,
                 name: entry.name,
+				tags: ["tag", "tag2"],
               ));
     }
     final RenderObject fabRenderBox = _key.currentContext!.findRenderObject()!;
@@ -38,6 +39,7 @@ class _ListOfListWidget extends State<ListOfListWidget>
       pageBuilder: (context, animation, secondaryAnimation) => ListPage(
         id: entry.uid,
         name: entry.name,
+		tags: ["tag", "tag2"],
       ),
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         var curve = Curves.easeInOutCubic;

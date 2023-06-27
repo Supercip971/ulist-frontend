@@ -7,6 +7,7 @@ import 'package:ulist/components/list_properties.dart';
 import 'package:ulist/list.dart';
 import 'package:ulist/listRequestCacher.dart';
 import 'package:ulist/pages/dummy_list_page.dart';
+import 'package:ulist/pages/popups/filter_popup.dart';
 import 'package:ulist/pages/register_page.dart';
 import 'package:ulist/pocket_base.dart';
 import '../services.dart';
@@ -15,7 +16,7 @@ import '../pocket_base.dart';
 import 'package:ulist/utils.dart';
 
 class ListPage extends StatefulWidget {
-  ListPage({super.key, required this.id, required this.name});
+  ListPage({super.key, required this.id, required this.name, required this.tags});
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -28,6 +29,7 @@ class ListPage extends StatefulWidget {
 
   final String id;
   final String name;
+  final List<String> tags;
   final OverlayEntry? overlay_entry = null;
 
   @override
@@ -245,6 +247,7 @@ class _ListPage extends State<ListPage> {
   Widget build(BuildContext context) {
     self.uid = widget.id;
     self.name = widget.name;
+	self.tags = widget.tags;
 
     var pbc = getIt<PocketBaseController>();
 
@@ -255,7 +258,12 @@ class _ListPage extends State<ListPage> {
                   style: Theme.of(context).textTheme.headlineSmall),
               if (loading) padx(const CircularProgressIndicator(), factor: 3.0)
             ]),
-            actions: [ListPropertiesBar(entry: self)]),
+            actions: [ListPropertiesBar(entry: self,
+				startFilter: (ctx) => {
+					showFilterSelection(context, self)
+				},
+				
+				)]),
         body: Center(
             heightFactor: 1.0,
             child: Column(children: [
