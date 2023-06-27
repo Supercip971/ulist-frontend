@@ -216,7 +216,8 @@ class _ListEntry extends State<ListEntry> with SingleTickerProviderStateMixin {
                                       style: ((widget.entry.checked)
                                           ? checked_style
                                           : default_style))),
-                              Text("user")
+
+                              Text(widget.entry.addedBy)
                             ])),
 						],),
 						tags_widgets.length > 0 ?  Row(
