@@ -1,16 +1,31 @@
 import 'dart:convert';
 
+List<String> tagList(String tags) {
+
+	if(tags.isEmpty) {
+		return [];
+	}
+  return tags.split(",");
+}
+
+String tagString(List<String> v) {
+
+  return v.join(",");
+}
+
+
 class ShoppingList {
   String name = "";
   String uid = "";
   List<String> tags = [];
-  ShoppingList({this.name = "", this.uid = "", this.tags = const ["store", "store2"]});
+  ShoppingList(
+      {this.name = "", this.uid = "", this.tags = const ["store", "store2"]});
 
   factory ShoppingList.fromJson(Map<String, dynamic> responseData) {
     return ShoppingList()
       ..name = responseData['name']
       ..uid = responseData['id']
-	  ..tags = ["store", "store2"];
+      ..tags = ["store", "store2"];
   }
 }
 
@@ -32,8 +47,8 @@ class ShoppingListEntry {
       this.uid = "",
       this.shoppingListId = "",
       this.checked = false,
-      this.local = false, 
-	  this.tags = const ["store", "store2"]});
+      this.local = false,
+      this.tags = const []});
 
   factory ShoppingListEntry.fromJson(Map<String, dynamic> responseData) {
     return ShoppingListEntry()
@@ -41,7 +56,8 @@ class ShoppingListEntry {
       ..uid = responseData['id']
       ..shoppingListId = responseData['list']
       ..addedBy = responseData['addedBy']
-      ..checked = responseData['checked'];
+      ..checked = responseData['checked']
+	  ..tags  = tagList(responseData['tags']);
   }
 }
 
@@ -66,16 +82,16 @@ class ShoppingListRight {
   }
 
   Map<String, dynamic> toJson() => {
-		'userId': userId,
-		'listId': shoppingListId,
-		'owner': owner,
-		'id': uid,
-	  };
+        'userId': userId,
+        'listId': shoppingListId,
+        'owner': owner,
+        'id': uid,
+      };
 }
-
 class ShoppingListEntryUpdate {
   String id = "";
   String name = "";
+  String tags = "NONE";
   bool checked = false;
 
   ShoppingListEntryUpdate({this.id = "", this.name = "", this.checked = false});
@@ -84,12 +100,14 @@ class ShoppingListEntryUpdate {
     return ShoppingListEntryUpdate()
       ..id = responseData['id']
       ..name = responseData['name']
-      ..checked = responseData['checked'];
+      ..checked = responseData['checked']
+      ..tags = responseData['tags'];
   }
 
   Map<String, dynamic> toJson() => {
         'id': id,
         'name': name,
+        'tags': tags,
         'checked': checked,
       };
 
@@ -97,7 +115,8 @@ class ShoppingListEntryUpdate {
     return ShoppingListEntryUpdate()
       ..id = entry.uid
       ..name = entry.name
-      ..checked = entry.checked;
+      ..checked = entry.checked
+      ..tags = tagString(entry.tags);
   }
 }
 
@@ -182,8 +201,6 @@ class ShoppingListShare {
       };
 }
 
-
-
 class ShoppingListPropsShare {
   String sharedBy = ""; // sharedBy
   String expirationDate = ""; // expirationDate
@@ -204,14 +221,14 @@ class ShoppingListPropsShare {
 }
 
 class ShoppingListPropsUser {
-  String name = ""; 
-  String id = ""; 
-  bool owner = false;  
+  String name = "";
+  String id = "";
+  bool owner = false;
 
   ShoppingListPropsUser({
     this.name = "",
     this.id = "",
-    this.owner = false, 
+    this.owner = false,
   });
 
   factory ShoppingListPropsUser.fromJson(Map<String, dynamic> responseData) {
@@ -220,20 +237,22 @@ class ShoppingListPropsUser {
       ..id = responseData['id']
       ..owner = responseData['owner'];
   }
-
 }
 
 class ShoppingListInformation {
-	List<ShoppingListPropsShare> shares = [];
-	List<ShoppingListPropsUser> users = [];
-	
-	ShoppingListInformation({this.shares = const [], this.users = const []});
+  List<ShoppingListPropsShare> shares = [];
+  List<ShoppingListPropsUser> users = [];
 
-	factory ShoppingListInformation.fromJson(Map<String, dynamic> responseData) {
-		print(responseData);
-		return ShoppingListInformation()
-			..users = (responseData['users'] as List).map((e) => ShoppingListPropsUser.fromJson(e)).toList()
-			..shares = (responseData['shares'] as List).map((e) => ShoppingListPropsShare.fromJson(e)).toList();
-	}
+  ShoppingListInformation({this.shares = const [], this.users = const []});
+
+  factory ShoppingListInformation.fromJson(Map<String, dynamic> responseData) {
+    print(responseData);
+    return ShoppingListInformation()
+      ..users = (responseData['users'] as List)
+          .map((e) => ShoppingListPropsUser.fromJson(e))
+          .toList()
+      ..shares = (responseData['shares'] as List)
+          .map((e) => ShoppingListPropsShare.fromJson(e))
+          .toList();
+  }
 }
-
