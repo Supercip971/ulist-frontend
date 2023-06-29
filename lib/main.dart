@@ -76,7 +76,7 @@ class _MyAppState extends State<MyApp> {
       themeMode: s.darkMode ? ThemeMode.light : ThemeMode.dark,
       theme: ThemeData.from(
         colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.purpleAccent,
+            seedColor: Colors.orange.shade100,
             brightness: s.darkMode ? Brightness.dark : Brightness.light),
         // This is the theme of your application.
         //
