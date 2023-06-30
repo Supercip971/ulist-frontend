@@ -4,6 +4,7 @@ import 'dart:isolate';
 
 import 'package:flutter/material.dart';
 import 'package:ulist/components/list_lists.dart';
+import 'package:ulist/components/list_rail_widget.dart';
 import 'package:ulist/list.dart';
 import 'package:ulist/pages/account_page.dart';
 import 'package:ulist/pages/list_page.dart';
@@ -208,99 +209,6 @@ class HomeSelectState extends State<HomeSelect> {
           ],
         ),
         body: Center(
-            child: SingleChildScrollView(
-                child: pady(Center(
-                    child: FutureBuilder<String>(
-                        future: init_loader(),
-                        builder:
-                            (BuildContext context, AsyncSnapshot snapshot) {
-                          List<Widget> children = [];
-                          if (snapshot.hasData || snapshot.hasError) {
-                            if (pbc.logged_in) {
-                              children = [
-                                get_lists(context),
-                                padx(Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      padx(
-                                          TextButton(
-                                              onPressed: () => {
-                                                    ShowListJoin().then(
-                                                      (value) {
-                                                        setState(() {});
-                                                      },
-                                                    )
-                                                  },
-                                              child: (Row(children: [
-                                                padx(const Icon(Icons.share)),
-                                                const Text("Join a new list")
-                                              ]))),
-                                          factor: 2.0),
-                                      padx(
-                                          TextButton(
-                                              onPressed: () =>
-                                                  {ShowListCreate()},
-                                              child: (Row(children: [
-                                                padx(const Icon(Icons.add)),
-                                                const Text("Create a new list")
-                                              ]))),
-                                          factor: 2.0)
-                                    ]))
-                              ];
-                            } else {
-                              children = [
-                                Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    pad(ElevatedButton(
-                                        onPressed: () => {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        const LoginPage(
-                                                            title:
-                                                                'U list - login')),
-                                              ).then(
-                                                  (value) => {setState(() {})})
-                                            },
-                                        child: Text("Login"))),
-                                    pad(ElevatedButton(
-                                        onPressed: () => {
-                                              Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        const RegisterPage(
-                                                            title:
-                                                                'U list - register')),
-                                              ).then(
-                                                  (value) => {setState(() {})})
-                                            },
-                                        child: Text("Register")))
-                                  ],
-                                )
-                              ];
-                            }
-                            //     children = [
-                            //       Center(child: pad(Text("Loaded ! ${snapshot.data}"))),
-                            //     ];
-                          } else {
-                            children = [
-                              Center(
-                                  child: Column(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: [
-                                    pad(CircularProgressIndicator()),
-                                    pad(Text("Loading")),
-                                    pad(Text("Connecting account..."))
-                                  ]))
-                            ];
-                          }
-                          return Center(
-                              child: Column(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: children));
-                        }))))));
+            child: ListRailWidget(onSelect: (){})));
   }
 }

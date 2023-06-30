@@ -1,0 +1,188 @@
+import 'package:flutter/material.dart';
+import 'package:ulist/components/list_lists.dart';
+import 'package:ulist/list.dart';
+import 'package:ulist/main.dart';
+import 'package:ulist/pages/list_properties.dart';
+import 'package:ulist/pages/login_page.dart';
+import 'package:ulist/pages/popups/invite-after.dart';
+import 'package:ulist/pages/popups/invite.dart';
+import 'package:ulist/pages/popups/join_list.dart';
+import 'package:ulist/pages/popups/new_list.dart';
+import 'package:ulist/pages/register_page.dart';
+import 'package:ulist/pocket_base.dart';
+import 'package:ulist/services.dart';
+import 'package:ulist/utils.dart';
+
+class ListRailWidget extends StatefulWidget {
+  const ListRailWidget({Key? key,  required this.onSelect})
+      : super(key: key);
+
+  final Function onSelect;
+  @override
+  State<ListRailWidget> createState() => _ListRailWidget();
+}
+
+class _ListRailWidget extends State<ListRailWidget> {
+  Future<String> init_loader() async {
+//    super.initState();
+
+    return Future.delayed(Duration(milliseconds: 16), () {
+      if (getIt<PocketBaseController>().loaded) {
+        return getIt<PocketBaseController>().current_user()!.email;
+      }
+
+      return getIt<PocketBaseController>().init().then((value) {
+        if (!getIt<PocketBaseController>().logged_in) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => const LoginPage(title: 'ULIST - login')),
+          ).then((value) {
+            setState(() {});
+          });
+
+          return "unlogged";
+        }
+        return getIt<PocketBaseController>().current_user()!.email;
+      });
+    });
+  }
+
+  List<ShoppingListRight> right_lists = [];
+  List<ShoppingList> lists = [];
+  Future<List<ShoppingList>> init_lists() async {
+    right_lists = [];
+    right_lists =
+        await getIt<PocketBaseController>().current_user_lists_right();
+
+    lists = [];
+    for (var l in right_lists) {
+      lists.add(await getIt<PocketBaseController>().get_list(l.shoppingListId));
+    }
+    return lists;
+  }
+
+  Widget get_lists(BuildContext context) {
+    return Column(children: [
+      FutureBuilder<List<ShoppingList>>(
+          future: init_lists(), builder: listListWidget),
+    ]);
+  }
+
+  MenuSelect? selectedMenu;
+
+  void ShowListCreate() {
+    var pbc = getIt<PocketBaseController>();
+    showNewListSettings(context).then(
+      (value) => {
+        if (value != null)
+          {
+            pbc.list_entry_create(value.name).then((_) => {
+                  setState(() {
+                    ScaffoldMessenger.of(context)
+                        .showSnackBar(SnackBar(content: Text("List created")));
+                  })
+                })
+          }
+      },
+    );
+  }
+
+  Future<void> ShowListJoin() async {
+    var pbc = getIt<PocketBaseController>();
+    await showJoinListSettings(context);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    var pbc = getIt<PocketBaseController>();
+
+    return SingleChildScrollView(
+        child: pady(Center(
+            child: FutureBuilder<String>(
+                future: init_loader(),
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  List<Widget> children = [];
+                  if (snapshot.hasData || snapshot.hasError) {
+                    if (pbc.logged_in) {
+                      children = [
+                        get_lists(context),
+                        padx(Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              padx(
+                                  TextButton(
+                                      onPressed: () => {
+                                            ShowListJoin().then(
+                                              (value) {
+                                                setState(() {});
+                                              },
+                                            )
+                                          },
+                                      child: (Row(children: [
+                                        padx(const Icon(Icons.share)),
+                                        const Text("Join a new list")
+                                      ]))),
+                                  factor: 2.0),
+                              padx(
+                                  TextButton(
+                                      onPressed: () => {ShowListCreate()},
+                                      child: (Row(children: [
+                                        padx(const Icon(Icons.add)),
+                                        const Text("Create a new list")
+                                      ]))),
+                                  factor: 2.0)
+                            ]))
+                      ];
+                    } else {
+                      children = [
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            pad(ElevatedButton(
+                                onPressed: () => {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const LoginPage(
+                                                    title: 'U list - login')),
+                                      ).then((value) => {setState(() {})})
+                                    },
+                                child: Text("Login"))),
+                            pad(ElevatedButton(
+                                onPressed: () => {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const RegisterPage(
+                                                    title:
+                                                        'U list - register')),
+                                      ).then((value) => {setState(() {})})
+                                    },
+                                child: Text("Register")))
+                          ],
+                        )
+                      ];
+                    }
+                    //     children = [
+                    //       Center(child: pad(Text("Loaded ! ${snapshot.data}"))),
+                    //     ];
+                  } else {
+                    children = [
+                      Center(
+                          child:
+                              Column(mainAxisSize: MainAxisSize.min, children: [
+                        pad(CircularProgressIndicator()),
+                        pad(Text("Loading")),
+                        pad(Text("Connecting account..."))
+                      ]))
+                    ];
+                  }
+                  return Center(
+                      child: Column(
+                          mainAxisSize: MainAxisSize.min, children: children));
+                }))));
+  }
+}
