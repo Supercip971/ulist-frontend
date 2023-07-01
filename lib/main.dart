@@ -161,10 +161,13 @@ class HomeSelectState extends State<HomeSelect> {
     return lists;
   }
 
+  Widget listListWidgetBuilder(BuildContext context, AsyncSnapshot snapshot) {
+	  return listListWidget(context, snapshot, null); 
+  }
   Widget get_lists(BuildContext context) {
     return Column(children: [
       FutureBuilder<List<ShoppingList>>(
-          future: init_lists(), builder: listListWidget),
+          future: init_lists(), builder: listListWidgetBuilder),
     ]);
   }
 

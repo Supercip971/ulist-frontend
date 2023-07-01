@@ -5,10 +5,14 @@ import 'package:ulist/pages/list_page.dart';
 import 'package:ulist/pages/dummy_list_page.dart';
 import 'package:ulist/utils.dart';
 
+typedef ShopListClickCallback = bool Function(
+    BuildContext ctx, ShoppingList entry);
+
 class ListOfListEntryWidget extends StatefulWidget {
-  const ListOfListEntryWidget({Key? key, required this.entry})
+  ListOfListEntryWidget({Key? key, required this.entry, this.onSelectOverride})
       : super(key: key);
 
+  ShopListClickCallback? onSelectOverride;
   final ShoppingList entry;
   @override
   State<ListOfListEntryWidget> createState() => _ListOfListEntryWidget();
@@ -38,7 +42,7 @@ class _ListOfListEntryWidget extends State<ListOfListEntryWidget>
       transitionDuration: Duration(milliseconds: 0),
       reverseTransitionDuration: Duration(milliseconds: 0),
       pageBuilder: (context, animation, secondaryAnimation) => ListPage(
-		tags: ["tag", "tag2"],
+        tags: ["tag", "tag2"],
         id: entry.uid,
         name: entry.name,
       ),
@@ -192,6 +196,11 @@ class _ListOfListEntryWidget extends State<ListOfListEntryWidget>
         key: _key,
         child: TextButton(
             onPressed: () {
+              if (widget.onSelectOverride != null) {
+                widget.onSelectOverride!(context, widget.entry);
+                return;
+              }
+
               createOverlay();
               Overlay.of(context, debugRequiredFor: widget)
                   .insert(overlayAnimation!);

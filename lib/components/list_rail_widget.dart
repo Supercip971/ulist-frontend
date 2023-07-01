@@ -62,10 +62,16 @@ class _ListRailWidget extends State<ListRailWidget> {
     return lists;
   }
 
+  Widget listListBuilder(BuildContext context, AsyncSnapshot snapshot) {
+ 
+	  return listListWidget(context, snapshot,null); 
+  }
+
+
   Widget get_lists(BuildContext context) {
     return Column(children: [
       FutureBuilder<List<ShoppingList>>(
-          future: init_lists(), builder: listListWidget),
+          future: init_lists(), builder: listListBuilder),
     ]);
   }
 
