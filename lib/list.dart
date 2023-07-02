@@ -19,13 +19,13 @@ class ShoppingList {
   String uid = "";
   List<String> tags = [];
   ShoppingList(
-      {this.name = "", this.uid = "", this.tags = const ["store", "store2"]});
+      {this.name = "", this.uid = "", this.tags = const []});
 
   factory ShoppingList.fromJson(Map<String, dynamic> responseData) {
     return ShoppingList()
       ..name = responseData['name']
       ..uid = responseData['id']
-      ..tags = ["store", "store2"];
+      ..tags = tagList(responseData['tags']);
   }
 }
 
