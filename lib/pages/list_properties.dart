@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:ulist/components/list_entry.dart';
 import 'package:ulist/components/list_properties.dart';
+import 'package:ulist/components/list_tag.dart';
 import 'package:ulist/list.dart';
 import 'package:ulist/listRequestCacher.dart';
 import 'package:ulist/pages/dummy_list_page.dart';
@@ -217,6 +218,35 @@ class _ListPropertiesPage extends State<ListPropertiesPage> {
     );
   }
 
+  Widget listTags(BuildContext context) {
+
+	  List<Widget> listTagsWidgets = [];
+	  for(var tag in self.tags) {
+		  listTagsWidgets.add(pady(ListTagButton(name: tag, callback: () {}), factor: 0.2)); 
+	  }
+
+
+	  if(listTagsWidgets.length == 0) {
+		  return Text("No tags");
+	  }
+return Card(
+      elevation: 1.0,
+      shape: RoundedRectangleBorder(
+        side: BorderSide(
+          color: Theme.of(context).colorScheme.outline,
+        ),
+        borderRadius: const BorderRadius.all(Radius.circular(12)),
+      ),
+      child: pady(Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: listTagsWidgets)),
+    );
+	  return Column(children: listTagsWidgets);
+
+  }
+ 
   Widget propertiesWidget(BuildContext context) {
     return SingleChildScrollView(
         primary: true,
@@ -231,6 +261,10 @@ class _ListPropertiesPage extends State<ListPropertiesPage> {
                     pady(Text("List properties",
                         style: Theme.of(context).textTheme.headlineSmall)),
                     listPropertiesPanel(context),
+				    pady(Text("List tags",
+                        style: Theme.of(context).textTheme.headlineSmall)),
+					listTags(context),
+                    
                     pady(Text("List shares",
                         style: Theme.of(context).textTheme.headlineSmall)),
                     pady(Text("List users",
