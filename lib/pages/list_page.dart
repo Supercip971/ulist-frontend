@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:ulist/components/list_entry.dart';
 import 'package:ulist/components/list_properties.dart';
+import 'package:ulist/components/list_tag.dart';
 import 'package:ulist/list.dart';
 import 'package:ulist/listRequestCacher.dart';
 import 'package:ulist/pages/dummy_list_page.dart';
@@ -37,10 +38,13 @@ class ListPage extends StatefulWidget {
 }
 
 List<ShoppingListEntry> reorderShoppingListEntries(
-    List<ShoppingListEntry> entries) {
+    List<ShoppingListEntry> entries, String filter) {
   List<ShoppingListEntry> checked = [];
   List<ShoppingListEntry> unchecked = [];
   for (var item in entries) {
+	if(filter != "" && !item.tags.contains(filter)){
+		continue;
+	}
     if (item.checked) {
       checked.add(item);
     } else {
@@ -70,6 +74,7 @@ int shoppingListInsertedIndex(
 
 class _ListPage extends State<ListPage> {
   ShoppingList self = ShoppingList();
+  String filter = ""; 
   List<ShoppingListEntry> entries = [];
 
   TextEditingController addedName = TextEditingController();
@@ -150,6 +155,13 @@ class _ListPage extends State<ListPage> {
     );
   }
 
+  void applyFilter(String filter) {
+	setState(() {
+	
+	  this.filter = filter;
+  });
+
+  }
   Widget listEntries() {
     List<Widget> widget_entries = [];
 
@@ -158,9 +170,23 @@ class _ListPage extends State<ListPage> {
           child:
               Text("No entries, please create a new one using the + button"));
     }
-    entries = reorderShoppingListEntries(entries);
+	
+	/*
+	if(_key.currentState != null){
+			_key.currentState!.removeAllItems((context, animation) => Container(), duration: Duration(milliseconds: 0));
+	   setState(() {
+	   	     
+	   	   });
+	}*/
+
+		print("filter: '" + filter + "'");
+    entries = reorderShoppingListEntries(entries, "");
+
+	
     for (var item in entries) {
       int i = entries.indexOf(item);
+
+	  if(item.tags.contains(filter) || filter == ""){
       widget_entries.add(ListEntry(
           id: i,
           entry: entries[i],
@@ -212,6 +238,11 @@ class _ListPage extends State<ListPage> {
             //  entries.add(new_entry);
             setState(() {});
           }));
+	  }
+	  else 
+	  {
+		widget_entries.add(Container());
+	  }
     }
 
     return pad(Column(children: [
@@ -227,10 +258,12 @@ class _ListPage extends State<ListPage> {
     ]));
   }
 
+  String old_filter = "";
   Widget entryLoader() {
     return FutureBuilder<bool>(
-      future: load_data(false),
+      future: load_data(old_filter != filter),
       builder: (context, snapshot) {
+		old_filter = filter;
         if (snapshot.hasData) {
           return listEntries();
         } else if (snapshot.hasError) {
@@ -251,6 +284,29 @@ class _ListPage extends State<ListPage> {
 
     var pbc = getIt<PocketBaseController>();
 
+	Widget filterBar = Container();
+	if(filter != "") 
+	{
+		filterBar = Row(children: [
+			
+			Text("Filtering by: "),
+			
+			ListTagButton(
+				name: filter,		
+				callback: () =>{
+					
+				}
+			), 
+			Spacer(),
+			TextButton.icon(
+				icon: Icon(Icons.clear),
+				onPressed: () => {
+					applyFilter("")
+				},
+				label: Text("Clear")
+			)
+		]);
+	}
     return Scaffold(
         appBar: AppBar(
             title: Row(children: [
@@ -260,13 +316,20 @@ class _ListPage extends State<ListPage> {
             ]),
             actions: [ListPropertiesBar(entry: self,
 				startFilter: (ctx) => {
-					showFilterSelection(context, self)
+					showFilterSelection(context, self).then((result) => {
+
+						if(result != null && result.result != null)
+						{
+							applyFilter(result.result!)
+						}
+					})
 				},
 				
 				)]),
         body: Center(
             heightFactor: 1.0,
             child: Column(children: [
+			  padx(filterBar, factor: 3),
               Flexible(
                 child: entryLoader(),
               ),
@@ -305,7 +368,7 @@ class _ListPage extends State<ListPage> {
 
                         entries.add(final_entry);
 
-                        entries = reorderShoppingListEntries(entries);
+                        entries = reorderShoppingListEntries(entries, filter);
 
                         getIt<ListRequestCacher>()
                             .insert_cached_entry(self, final_entry);

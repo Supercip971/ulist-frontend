@@ -42,7 +42,7 @@ class _ListOfListEntryWidget extends State<ListOfListEntryWidget>
       transitionDuration: Duration(milliseconds: 0),
       reverseTransitionDuration: Duration(milliseconds: 0),
       pageBuilder: (context, animation, secondaryAnimation) => ListPage(
-        tags: ["tag", "tag2"],
+		tags: entry.tags,
         id: entry.uid,
         name: entry.name,
       ),

@@ -44,7 +44,7 @@ Widget dummy_list_entries(ShoppingList? l) {
 
     if (cache_controller != null) {
       used_cache = true;
-      entries = reorderShoppingListEntries(cache_controller);
+      entries = reorderShoppingListEntries(cache_controller, "");
     }
   }
 
