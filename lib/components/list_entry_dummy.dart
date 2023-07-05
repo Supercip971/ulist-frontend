@@ -205,9 +205,24 @@ class _DummyListEntry extends State<DummyListEntry>
                               Text("user")
                             ])),
 						],),
+						Spacer(),
 						tags_widgets.length > 0 ?  Row(
 							children: tags_widgets,
 						)	 : Container(),
+
+
+						( PopupMenuButton(itemBuilder: (BuildContext context) {
+
+							var result = <PopupMenuEntry<String>>[];
+								result.add(
+									PopupMenuItem<String>(
+										value: "remove",
+										child: Text("remove"),
+									)
+								);
+
+							return result;
+						}))
 						
                       ],
                     ),
