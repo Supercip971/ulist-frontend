@@ -17,7 +17,8 @@ import '../pocket_base.dart';
 import 'package:ulist/utils.dart';
 
 class ListPage extends StatefulWidget {
-  ListPage({super.key, required this.id, required this.name, required this.tags});
+  ListPage(
+      {super.key, required this.id, required this.name, required this.tags});
 
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
@@ -42,9 +43,9 @@ List<ShoppingListEntry> reorderShoppingListEntries(
   List<ShoppingListEntry> checked = [];
   List<ShoppingListEntry> unchecked = [];
   for (var item in entries) {
-	if(filter != "" && !item.tags.contains(filter)){
-		continue;
-	}
+    if (filter != "" && !item.tags.contains(filter)) {
+      continue;
+    }
     if (item.checked) {
       checked.add(item);
     } else {
@@ -74,7 +75,7 @@ int shoppingListInsertedIndex(
 
 class _ListPage extends State<ListPage> {
   ShoppingList self = ShoppingList();
-  String filter = ""; 
+  String filter = "";
   List<ShoppingListEntry> entries = [];
 
   TextEditingController addedName = TextEditingController();
@@ -156,12 +157,11 @@ class _ListPage extends State<ListPage> {
   }
 
   void applyFilter(String filter) {
-	setState(() {
-	
-	  this.filter = filter;
-  });
-
+    setState(() {
+      this.filter = filter;
+    });
   }
+
   Widget listEntries() {
     List<Widget> widget_entries = [];
 
@@ -170,8 +170,8 @@ class _ListPage extends State<ListPage> {
           child:
               Text("No entries, please create a new one using the + button"));
     }
-	
-	/*
+
+    /*
 	if(_key.currentState != null){
 			_key.currentState!.removeAllItems((context, animation) => Container(), duration: Duration(milliseconds: 0));
 	   setState(() {
@@ -179,70 +179,67 @@ class _ListPage extends State<ListPage> {
 	   	   });
 	}*/
 
-		print("filter: '" + filter + "'");
+    print("filter: '" + filter + "'");
     entries = reorderShoppingListEntries(entries, "");
 
-	
     for (var item in entries) {
       int i = entries.indexOf(item);
 
-	  if(item.tags.contains(filter) || filter == ""){
-      widget_entries.add(ListEntry(
-          id: i,
-          entry: entries[i],
-          onChanged: (new_entry, id, slide) {
-            var prev = entries[i];
+      if (item.tags.contains(filter) || filter == "") {
+        widget_entries.add(ListEntry(
+            id: i,
+            entry: entries[i],
+            onChanged: (new_entry, id, slide, remove) {
+              var prev = entries[i];
 
-            entries[i].checked = new_entry.checked;
+              entries[i].checked = new_entry.checked;
 
-            upload_change(i);
+              upload_change(i);
 
-            if (slide) {
-              _key.currentState!.removeItem(
-                  id,
-                  (context, animation) => SizeTransition(
-                      sizeFactor: animation,
-                      child: SlideTransition(
-                          position: Tween<Offset>(
-                            begin: const Offset(10, 0),
-                            end: const Offset(10, 0),
-                          ).animate(animation),
-                          child: ListEntry(
-                            id: i,
-                            entry: prev,
-                            onChanged: (entry, id, swpi) {},
-                          ))),
-                  duration: const Duration(milliseconds: 300));
-            } else {
-              _key.currentState!.removeItem(
-                  id,
-                  (context, animation) => SizeTransition(
-                      sizeFactor: animation,
-                      child: SlideTransition(
-                          position: Tween<Offset>(
-                            begin: const Offset(1, 0),
-                            end: Offset(0, 0),
-                          ).animate(animation),
-                          child: ListEntry(
-                            id: i,
-                            entry: prev,
-                            onChanged: (entry, id, swpi) {},
-                          ))),
-                  duration: const Duration(milliseconds: 300));
-            }
+              if (slide) {
+                _key.currentState!.removeItem(
+                    id,
+                    (context, animation) => SizeTransition(
+                        sizeFactor: animation,
+                        child: SlideTransition(
+                            position: Tween<Offset>(
+                              begin: const Offset(10, 0),
+                              end: const Offset(10, 0),
+                            ).animate(animation),
+                            child: ListEntry(
+                              id: i,
+                              entry: prev,
+                              onChanged: (entry, id, swipe, removed) {},
+                            ))),
+                    duration: const Duration(milliseconds: 300));
+              } else {
+                _key.currentState!.removeItem(
+                    id,
+                    (context, animation) => SizeTransition(
+                        sizeFactor: animation,
+                        child: SlideTransition(
+                            position: Tween<Offset>(
+                              begin: const Offset(1, 0),
+                              end: Offset(0, 0),
+                            ).animate(animation),
+                            child: ListEntry(
+                              id: i,
+                              entry: prev,
+                              onChanged: (entry, id, swipe, removed) {},
+                            ))),
+                    duration: const Duration(milliseconds: 300));
+              }
 
-            _key.currentState!
-                .insertItem(i, duration: const Duration(milliseconds: 0));
+              _key.currentState!
+                  .insertItem(i, duration: const Duration(milliseconds: 0));
 
-            // entries.removeAt(i);
-            //  entries.add(new_entry);
-            setState(() {});
-          }));
-	  }
-	  else 
-	  {
-		widget_entries.add(Container());
-	  }
+              // entries.removeAt(i);
+              //  entries.add(new_entry);
+              setState(() {});
+            }));
+      } else {
+        widget_entries.add(Container());
+      }
     }
 
     return pad(Column(children: [
@@ -263,7 +260,7 @@ class _ListPage extends State<ListPage> {
     return FutureBuilder<bool>(
       future: load_data(old_filter != filter),
       builder: (context, snapshot) {
-		old_filter = filter;
+        old_filter = filter;
         if (snapshot.hasData) {
           return listEntries();
         } else if (snapshot.hasError) {
@@ -276,37 +273,53 @@ class _ListPage extends State<ListPage> {
     );
   }
 
+
+  List<String> selected_tag = [];
+
+  bool showTags = false;
+
   @override
   Widget build(BuildContext context) {
     self.uid = widget.id;
     self.name = widget.name;
-	self.tags = widget.tags;
+    self.tags = widget.tags;
+
+    List<Widget> editing_tags_widget = [];
+
+	for(var tag in self.tags){
+		editing_tags_widget.add(
+			padx(ListTagButton(name: tag,
+			    highlighted: selected_tag.contains(tag),
+				callback: () => {
+
+				setState(() {
+					if(selected_tag.contains(tag)){
+						selected_tag.remove(tag);
+					}
+					else{
+						selected_tag.add(tag);
+					}
+				})
+			}), factor: 0.5));
+	}
+
+	editing_tags_widget.add(IconButton.outlined(onPressed: (){}, icon: Icon(Icons.add) ));
+
 
     var pbc = getIt<PocketBaseController>();
 
-	Widget filterBar = Container();
-	if(filter != "") 
-	{
-		filterBar = Row(children: [
-			
-			Text("Filtering by: "),
-			
-			ListTagButton(
-				name: filter,		
-				callback: () =>{
-					
-				}
-			), 
-			Spacer(),
-			TextButton.icon(
-				icon: Icon(Icons.clear),
-				onPressed: () => {
-					applyFilter("")
-				},
-				label: Text("Clear")
-			)
-		]);
-	}
+    Widget filterBar = Container();
+    if (filter != "") {
+      filterBar = Row(children: [
+        Text("Filtering by: "),
+        ListTagButton(name: filter, callback: () => {}),
+        Spacer(),
+        TextButton.icon(
+            icon: Icon(Icons.clear),
+            onPressed: () => {applyFilter("")},
+            label: Text("Clear"))
+      ]);
+    }
     return Scaffold(
         appBar: AppBar(
             title: Row(children: [
@@ -314,75 +327,87 @@ class _ListPage extends State<ListPage> {
                   style: Theme.of(context).textTheme.headlineSmall),
               if (loading) padx(const CircularProgressIndicator(), factor: 3.0)
             ]),
-            actions: [ListPropertiesBar(entry: self,
-				startFilter: (ctx) => {
-					showFilterSelection(context, self).then((result) => {
-
-						if(result != null && result.result != null)
-						{
-							applyFilter(result.result!)
-						}
-					})
-				},
-				
-				)]),
+            actions: [
+              ListPropertiesBar(
+                entry: self,
+                startFilter: (ctx) => {
+                  showFilterSelection(context, self).then((result) => {
+                        if (result != null && result.result != null)
+                          {applyFilter(result.result!)}
+                      })
+                },
+              )
+            ]),
         body: Center(
             heightFactor: 1.0,
             child: Column(children: [
-			  padx(filterBar, factor: 3),
+              padx(filterBar, factor: 3),
               Flexible(
                 child: entryLoader(),
               ),
-              pad(Row(
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  Checkbox(
-                    value: current_being_edited.checked,
-                    onChanged: (value) {
-                      setState(() {
-                        current_being_edited.checked = value!;
-                      });
-                    },
-                  ),
-                  Flexible(
-                    child: Container(
-                      child: padx(TextField(
-                        controller: addedName,
-                        onChanged: (value) {},
-                      )),
+              pad(Column(children: [
+                /* tag row */
+
+			   showTags ? Row(children: editing_tags_widget) : Container(),
+			    
+                /* editing row */
+                Row(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+					
+
+					showTags ? IconButton.filled(onPressed: () => {
+						setState(() => { showTags = !showTags })
+					}, icon: Icon(Icons.local_offer)) :  IconButton.outlined(onPressed: () => {
+						setState(() => { showTags = !showTags })
+					}, icon: Icon(Icons.local_offer)) ,
+
+                   Flexible(
+                      child: Container(
+                        child: padx(TextField(
+                          controller: addedName,
+                          onChanged: (value) {},
+                        )),
+                      ),
                     ),
-                  ),
-                  FloatingActionButton(
-                      onPressed: () {
-                        ShoppingListEntryPush entry = ShoppingListEntryPush();
+                    FloatingActionButton(
+                        onPressed: () {
+                          ShoppingListEntryPush entry = ShoppingListEntryPush();
 
-                        String temp_uid = Random().nextInt(1000000).toString();
-                        ShoppingListEntry final_entry = ShoppingListEntry(
-                            name: addedName.text,
-                            checked: false,
-                            uid: temp_uid,
-                            local: true);
 
-                        entry.checked = false;
-                        entry.name = addedName.text;
+                          String temp_uid =
+                              Random().nextInt(1000000).toString();
+                          ShoppingListEntry final_entry = ShoppingListEntry(
+                              name: addedName.text,
+                              checked: false,
+                              uid: temp_uid,
+                              local: true);
 
-                        entries.add(final_entry);
+                          entry.checked = false;
+                          entry.name = addedName.text;
 
-                        entries = reorderShoppingListEntries(entries, filter);
+						  if(showTags){
+							  // FIXME: entry.tags = selected_tag;
+						  }
 
-                        getIt<ListRequestCacher>()
-                            .insert_cached_entry(self, final_entry);
-                        _key.currentState!.insertItem(
-                            entries.indexOf(final_entry),
-                            duration: const Duration(milliseconds: 300));
-                        dirty = true;
-                        pbc.list_entry_add(self, entry).then((v) {
-                          setState(() {});
-                        });
-                      },
-                      child: const Icon(Icons.add))
-                ],
-              ))
+                          entries.add(final_entry);
+
+                          entries = reorderShoppingListEntries(entries, filter);
+
+                          getIt<ListRequestCacher>()
+                              .insert_cached_entry(self, final_entry);
+                          _key.currentState!.insertItem(
+                              entries.indexOf(final_entry),
+                              duration: const Duration(milliseconds: 300));
+                          dirty = true;
+                          pbc.list_entry_add(self, entry).then((v) {
+                            setState(() {});
+                          });
+                        },
+                        child: const Icon(Icons.add))
+                  ],
+                )
+              ]))
             ])));
   }
 }
