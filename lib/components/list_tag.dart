@@ -6,8 +6,10 @@ import 'package:ulist/pages/popups/invite.dart';
 import 'package:ulist/utils.dart';
 
 class ListTagButton extends StatefulWidget {
-  const ListTagButton ({Key? key, required this.name, required this.callback}) : super(key: key);
+  ListTagButton ({Key? key, required this.name, required this.callback, this.highlighted = false}) : super(key: key);
 
+
+  bool highlighted;
   final String name;
   final Function callback;
   @override
@@ -26,15 +28,15 @@ class _ListTagButton extends State<ListTagButton> {
 			primary: color, 
 
 
-			side: BorderSide(color: color.withAlpha(120), width: 1),
-			backgroundColor: color.withAlpha(20),
+			side: BorderSide(color: color.withAlpha(widget.highlighted ? 200 : 120), width: 1),
+			backgroundColor: color.withAlpha(widget.highlighted ? 255 : 20),
 			shape: const RoundedRectangleBorder(
 				borderRadius: BorderRadius.all(Radius.circular(20)),
 			),
 		),
 	
 	  onPressed: () => widget.callback(),
-	  child: Text(widget.name, style: TextStyle(color: Colors.black, fontSize: 12)),
+	  child: Text(widget.name, style: TextStyle(color: widget.highlighted ? Colors.white :  Colors.black, fontSize: 12)),
 	);
    
   }
