@@ -49,7 +49,18 @@ Future<FilterResult?> showFilterSelection(
                     ]),
                     pad(Text("Filtering by a tag")),
 					SingleChildScrollView(child: 
-                    pad(Column(children: options)),
+                    pad(Column(children: options), factor:0.5),
+					),
+      				pady((TextButton.icon(
+                          onPressed: () {
+                            var pbc = getIt<PocketBaseController>();
+
+                            Navigator.pop(context);
+                          },
+						  icon: Icon(Icons.create),
+                          label: 
+                              Text("Create a new tag")
+                          )),
 					),
                     Row(children: [
                       Spacer(),
@@ -61,17 +72,7 @@ Future<FilterResult?> showFilterSelection(
                             "Cancel",
                           )))),
 
-                      (TextButton.icon(
-                          onPressed: () {
-                            var pbc = getIt<PocketBaseController>();
-
-                            Navigator.pop(context);
-                          },
-						  icon: Icon(Icons.create),
-                          label: 
-                              Text("Create a new tag")
-                          )),
-                      (TextButton.icon(
+                     (TextButton.icon(
                           onPressed: () {
                             var pbc = getIt<PocketBaseController>();
 
