@@ -94,14 +94,16 @@ class ShoppingListEntryUpdate {
   String tags = "NONE";
   bool checked = false;
 
-  ShoppingListEntryUpdate({this.id = "", this.name = "", this.checked = false});
+  bool delete = false;
+  ShoppingListEntryUpdate({this.id = "", this.name = "", this.checked = false, this.delete = false});
 
   factory ShoppingListEntryUpdate.fromJson(Map<String, dynamic> responseData) {
     return ShoppingListEntryUpdate()
       ..id = responseData['id']
       ..name = responseData['name']
       ..checked = responseData['checked']
-      ..tags = responseData['tags'];
+      ..tags = responseData['tags']
+	  ..delete = responseData['delete'];
   }
 
   Map<String, dynamic> toJson() => {
@@ -109,6 +111,7 @@ class ShoppingListEntryUpdate {
         'name': name,
         'tags': tags,
         'checked': checked,
+		'delete': delete,
       };
 
   factory ShoppingListEntryUpdate.fromEntry(ShoppingListEntry entry) {

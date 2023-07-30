@@ -84,13 +84,16 @@ class _ListPage extends State<ListPage> {
   AnimatedListState animatedListState = AnimatedListState();
   bool dirty = true;
   bool loading = true;
-  Future<bool> upload_change(int place) async {
+  Future<bool> upload_change(
+	  int place , bool delete_entry) async {
     var pbc = getIt<PocketBaseController>();
     var entry = entries[place];
 
     ShoppingListEntryUpdate update = ShoppingListEntryUpdate();
     update.id = entries[place].uid;
     update.checked = entries[place].checked;
+
+	update.delete = delete_entry;
 
     update.name = entries[place].name;
 
@@ -190,11 +193,40 @@ class _ListPage extends State<ListPage> {
             id: i,
             entry: entries[i],
             onChanged: (new_entry, id, slide, remove) {
-              var prev = entries[i];
+		     var prev = entries[i];
+
+              upload_change( 
+				  i,
+				  remove
+			  );
+
+
+				if(remove)
+				{
+
+
+				 _key.currentState!.removeItem(
+                    id,
+                    (context, animation) => SizeTransition(
+                        sizeFactor: animation,
+                        child: SlideTransition(
+                            position: Tween<Offset>(
+                              begin: const Offset(1, 0),
+                              end: const Offset(0, 0),
+                            ).animate(animation),
+                            child: ListEntry(
+                              id: i,
+                              entry: prev,
+                              onChanged: (entry, id, swipe, removed) {},
+                            ))),
+                    duration: const Duration(milliseconds: 300));
+              
+
+				}
+				else {
 
               entries[i].checked = new_entry.checked;
 
-              upload_change(i);
 
               if (slide) {
                 _key.currentState!.removeItem(
@@ -235,6 +267,7 @@ class _ListPage extends State<ListPage> {
 
               // entries.removeAt(i);
               //  entries.add(new_entry);
+				}
               setState(() {});
             }));
       } else {

@@ -48,6 +48,7 @@ class SettingsManager {
     secureStorage.read(key: "settings").then((value) {
       if (value != null) {
         _settings = Settings.fromJson(jsonDecode(value));
+        
       } else {
         _settings = Settings.defaultSettings();
         secureStorage.write(key: "settings", value: jsonEncode(_settings));
