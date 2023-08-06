@@ -1,6 +1,6 @@
 {
-    "name": "ulist",
-    "short_name": "ulist",
+    "name": "cutelist",
+    "short_name": "cutelist",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

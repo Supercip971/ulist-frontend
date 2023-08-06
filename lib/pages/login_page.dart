@@ -3,12 +3,12 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
-import 'package:ulist/pages/register_page.dart';
-import 'package:ulist/pocket_base.dart';
+import 'package:cutelist/pages/register_page.dart';
+import 'package:cutelist/pocket_base.dart';
 import '../services.dart';
 import '../pocket_base.dart';
 
-import 'package:ulist/utils.dart';
+import 'package:cutelist/utils.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key, required this.title, this.afterRegister = false});

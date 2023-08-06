@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:ulist/components/list_tag.dart';
-import 'package:ulist/list.dart';
-import 'package:ulist/pages/account_page.dart';
-import 'package:ulist/pocket_base.dart';
-import 'package:ulist/services.dart';
-import 'package:ulist/utils.dart';
+import 'package:cutelist/components/list_tag.dart';
+import 'package:cutelist/list.dart';
+import 'package:cutelist/pages/account_page.dart';
+import 'package:cutelist/pocket_base.dart';
+import 'package:cutelist/services.dart';
+import 'package:cutelist/utils.dart';
 
 class FilterResult {
   String? result = "";
@@ -26,11 +26,13 @@ Future<FilterResult?> showFilterSelection(
         list.tags.forEach((entry) {
           FilterResult res = FilterResult();
           res.result = entry;
-          options.add(pady(ListTagButton(
-              name: entry,
-              callback: () {
-                Navigator.pop(context, res);
-              }), factor: 0.5));
+          options.add(pady(
+              ListTagButton(
+                  name: entry,
+                  callback: () {
+                    Navigator.pop(context, res);
+                  }),
+              factor: 0.5));
         });
         // values
         return StatefulBuilder(
@@ -48,20 +50,19 @@ Future<FilterResult?> showFilterSelection(
                       )
                     ]),
                     pad(Text("Filtering by a tag")),
-					SingleChildScrollView(child: 
-                    pad(Column(children: options), factor:0.5),
-					),
-      				pady((TextButton.icon(
+                    SingleChildScrollView(
+                      child: pad(Column(children: options), factor: 0.5),
+                    ),
+                    pady(
+                      (TextButton.icon(
                           onPressed: () {
                             var pbc = getIt<PocketBaseController>();
 
                             Navigator.pop(context);
                           },
-						  icon: Icon(Icons.create),
-                          label: 
-                              Text("Create a new tag")
-                          )),
-					),
+                          icon: Icon(Icons.create),
+                          label: Text("Create a new tag"))),
+                    ),
                     Row(children: [
                       Spacer(),
                       padx(TextButton(
@@ -71,18 +72,14 @@ Future<FilterResult?> showFilterSelection(
                           child: padx(Text(
                             "Cancel",
                           )))),
-
-                     (TextButton.icon(
+                      (TextButton.icon(
                           onPressed: () {
                             var pbc = getIt<PocketBaseController>();
 
                             Navigator.pop(context);
                           },
-						  icon: Icon(Icons.brush),
-                          label: 
-                              Text("Apply tags")
-                            
-                          )),
+                          icon: Icon(Icons.brush),
+                          label: Text("Apply tags"))),
                     ])
                   ])),
                 )));

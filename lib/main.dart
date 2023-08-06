@@ -3,21 +3,21 @@ import 'dart:io';
 import 'dart:isolate';
 
 import 'package:flutter/material.dart';
-import 'package:ulist/components/list_lists.dart';
-import 'package:ulist/components/list_rail_widget.dart';
-import 'package:ulist/list.dart';
-import 'package:ulist/pages/account_page.dart';
-import 'package:ulist/pages/list_page.dart';
-import 'package:ulist/pages/popups/home_properties.dart';
-import 'package:ulist/pages/popups/join_list.dart';
-import 'package:ulist/pages/popups/new_list.dart';
-import 'package:ulist/pages/register_page.dart';
-import 'package:ulist/pocket_base.dart';
-import 'package:ulist/settings.dart';
-import 'package:ulist/utils.dart';
+import 'package:cutelist/components/list_lists.dart';
+import 'package:cutelist/components/list_rail_widget.dart';
+import 'package:cutelist/list.dart';
+import 'package:cutelist/pages/account_page.dart';
+import 'package:cutelist/pages/list_page.dart';
+import 'package:cutelist/pages/popups/home_properties.dart';
+import 'package:cutelist/pages/popups/join_list.dart';
+import 'package:cutelist/pages/popups/new_list.dart';
+import 'package:cutelist/pages/register_page.dart';
+import 'package:cutelist/pocket_base.dart';
+import 'package:cutelist/settings.dart';
+import 'package:cutelist/utils.dart';
 
 import 'services.dart';
-import 'package:ulist/pages/login_page.dart';
+import 'package:cutelist/pages/login_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -91,7 +91,7 @@ class _MyAppState extends State<MyApp> {
         useMaterial3: true,
         //    primarySwatch: Colors.blue,
       ),
-      home: const HomeSelect(title: 'Ulist'),
+      home: const HomeSelect(title: 'cutelist'),
     );
 
     return v;
@@ -135,7 +135,8 @@ class HomeSelectState extends State<HomeSelect> {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => const LoginPage(title: 'ULIST - login')),
+                builder: (context) =>
+                    const LoginPage(title: 'cutelist - login')),
           ).then((value) {
             setState(() {});
           });
@@ -162,8 +163,9 @@ class HomeSelectState extends State<HomeSelect> {
   }
 
   Widget listListWidgetBuilder(BuildContext context, AsyncSnapshot snapshot) {
-	  return listListWidget(context, snapshot, null); 
+    return listListWidget(context, snapshot, null);
   }
+
   Widget get_lists(BuildContext context) {
     return Column(children: [
       FutureBuilder<List<ShoppingList>>(
@@ -211,7 +213,6 @@ class HomeSelectState extends State<HomeSelect> {
                 icon: Icon(Icons.account_circle)))
           ],
         ),
-        body: Center(
-            child: ListRailWidget(onSelect: (){})));
+        body: Center(child: ListRailWidget(onSelect: () {})));
   }
 }

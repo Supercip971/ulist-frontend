@@ -3,7 +3,7 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:ulist/services.dart';
+import 'package:cutelist/services.dart';
 
 class Settings {
   bool darkMode = false;
@@ -48,7 +48,6 @@ class SettingsManager {
     secureStorage.read(key: "settings").then((value) {
       if (value != null) {
         _settings = Settings.fromJson(jsonDecode(value));
-        
       } else {
         _settings = Settings.defaultSettings();
         secureStorage.write(key: "settings", value: jsonEncode(_settings));

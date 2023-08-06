@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:ulist/components/list_properties.dart';
-import 'package:ulist/list.dart';
-import 'package:ulist/pages/list_page.dart';
-import 'package:ulist/pages/dummy_list_page.dart';
-import 'package:ulist/utils.dart';
+import 'package:cutelist/components/list_properties.dart';
+import 'package:cutelist/list.dart';
+import 'package:cutelist/pages/list_page.dart';
+import 'package:cutelist/pages/dummy_list_page.dart';
+import 'package:cutelist/utils.dart';
 
 typedef ShopListClickCallback = bool Function(
     BuildContext ctx, ShoppingList entry);
@@ -42,7 +42,7 @@ class _ListOfListEntryWidget extends State<ListOfListEntryWidget>
       transitionDuration: Duration(milliseconds: 0),
       reverseTransitionDuration: Duration(milliseconds: 0),
       pageBuilder: (context, animation, secondaryAnimation) => ListPage(
-		tags: entry.tags,
+        tags: entry.tags,
         id: entry.uid,
         name: entry.name,
       ),

@@ -2,19 +2,19 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:ulist/components/list_entry.dart';
-import 'package:ulist/components/list_properties.dart';
-import 'package:ulist/components/list_tag.dart';
-import 'package:ulist/list.dart';
-import 'package:ulist/listRequestCacher.dart';
-import 'package:ulist/pages/dummy_list_page.dart';
-import 'package:ulist/pages/register_page.dart';
-import 'package:ulist/pocket_base.dart';
-import 'package:ulist/user.dart';
+import 'package:cutelist/components/list_entry.dart';
+import 'package:cutelist/components/list_properties.dart';
+import 'package:cutelist/components/list_tag.dart';
+import 'package:cutelist/list.dart';
+import 'package:cutelist/listRequestCacher.dart';
+import 'package:cutelist/pages/dummy_list_page.dart';
+import 'package:cutelist/pages/register_page.dart';
+import 'package:cutelist/pocket_base.dart';
+import 'package:cutelist/user.dart';
 import '../services.dart';
 import '../pocket_base.dart';
 
-import 'package:ulist/utils.dart';
+import 'package:cutelist/utils.dart';
 
 class ListPropertiesPage extends StatefulWidget {
   ListPropertiesPage({super.key, required this.id});
@@ -191,12 +191,11 @@ class _ListPropertiesPage extends State<ListPropertiesPage> {
   }
 
   Widget listUsersPanel(BuildContext context) {
-    List<ShoppingListPropsUser> users = [
-    ];
+    List<ShoppingListPropsUser> users = [];
 
-	for (var user in props.users) {
-		users.add(user);
-	}
+    for (var user in props.users) {
+      users.add(user);
+    }
 
     List<Widget> usersWidgets = [];
 
@@ -219,17 +218,16 @@ class _ListPropertiesPage extends State<ListPropertiesPage> {
   }
 
   Widget listTags(BuildContext context) {
+    List<Widget> listTagsWidgets = [];
+    for (var tag in self.tags) {
+      listTagsWidgets
+          .add(pady(ListTagButton(name: tag, callback: () {}), factor: 0.2));
+    }
 
-	  List<Widget> listTagsWidgets = [];
-	  for(var tag in self.tags) {
-		  listTagsWidgets.add(pady(ListTagButton(name: tag, callback: () {}), factor: 0.2)); 
-	  }
-
-
-	  if(listTagsWidgets.length == 0) {
-		  return Text("No tags");
-	  }
-return Card(
+    if (listTagsWidgets.length == 0) {
+      return Text("No tags");
+    }
+    return Card(
       elevation: 1.0,
       shape: RoundedRectangleBorder(
         side: BorderSide(
@@ -243,10 +241,9 @@ return Card(
           mainAxisAlignment: MainAxisAlignment.start,
           children: listTagsWidgets)),
     );
-	  return Column(children: listTagsWidgets);
-
+    return Column(children: listTagsWidgets);
   }
- 
+
   Widget propertiesWidget(BuildContext context) {
     return SingleChildScrollView(
         primary: true,
@@ -261,10 +258,9 @@ return Card(
                     pady(Text("List properties",
                         style: Theme.of(context).textTheme.headlineSmall)),
                     listPropertiesPanel(context),
-				    pady(Text("List tags",
+                    pady(Text("List tags",
                         style: Theme.of(context).textTheme.headlineSmall)),
-					listTags(context),
-                    
+                    listTags(context),
                     pady(Text("List shares",
                         style: Theme.of(context).textTheme.headlineSmall)),
                     pady(Text("List users",

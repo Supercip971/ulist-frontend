@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ulist/pages/account_page.dart';
-import 'package:ulist/utils.dart';
+import 'package:cutelist/pages/account_page.dart';
+import 'package:cutelist/utils.dart';
 
 class NewListResult {
   String name = "";

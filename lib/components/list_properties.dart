@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:ulist/list.dart';
-import 'package:ulist/pages/list_properties.dart';
-import 'package:ulist/pages/popups/invite-after.dart';
-import 'package:ulist/pages/popups/invite.dart';
-import 'package:ulist/utils.dart';
+import 'package:cutelist/list.dart';
+import 'package:cutelist/pages/list_properties.dart';
+import 'package:cutelist/pages/popups/invite-after.dart';
+import 'package:cutelist/pages/popups/invite.dart';
+import 'package:cutelist/utils.dart';
 
 class ListPropertiesBar extends StatefulWidget {
-  const ListPropertiesBar({Key? key, required this.entry, this.startFilter = null}) : super(key: key);
+  const ListPropertiesBar(
+      {Key? key, required this.entry, this.startFilter = null})
+      : super(key: key);
 
   final Function(BuildContext)? startFilter;
-	
+
   final ShoppingList entry;
   @override
   State<ListPropertiesBar> createState() => _ListPropertiesBar();
@@ -20,12 +22,11 @@ class _ListPropertiesBar extends State<ListPropertiesBar> {
   @override
   Widget build(BuildContext context) {
     return padx(Row(children: [
-      IconButton(onPressed: () => {
-		if(widget.startFilter != null) 
-		{
-			widget.startFilter!(context)	
-		}
-	  }, icon: Icon(Icons.filter_list)),
+      IconButton(
+          onPressed: () => {
+                if (widget.startFilter != null) {widget.startFilter!(context)}
+              },
+          icon: Icon(Icons.filter_list)),
       IconButton(
           onPressed: () => {
                 showListInvite(context, widget.entry).then(

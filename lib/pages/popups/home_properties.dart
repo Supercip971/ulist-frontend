@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:ulist/pages/account_page.dart';
-import 'package:ulist/pages/login_page.dart';
-import 'package:ulist/pages/settings_page.dart';
-import 'package:ulist/settings.dart';
-import 'package:ulist/utils.dart';
+import 'package:cutelist/pages/account_page.dart';
+import 'package:cutelist/pages/login_page.dart';
+import 'package:cutelist/pages/settings_page.dart';
+import 'package:cutelist/settings.dart';
+import 'package:cutelist/utils.dart';
 
 Future showPropertiesAccount(BuildContext context) async {
   TextStyle style = Theme.of(context).textTheme.headlineLarge!;
@@ -18,7 +18,7 @@ Future showPropertiesAccount(BuildContext context) async {
           children: [
             Row(mainAxisSize: MainAxisSize.min, children: [
               pad(
-                Text("Ulist",
+                Text("cutelist",
                     style: style.apply(
                         color:
                             Theme.of(context).colorScheme.onPrimaryContainer)),
@@ -34,7 +34,7 @@ Future showPropertiesAccount(BuildContext context) async {
                           context,
                           MaterialPageRoute(
                               builder: (context) =>
-                                  const AccountPage(title: 'ULIST - login')),
+                                  const AccountPage(title: 'cutelist - login')),
                         ).then((value) {});
                       },
                       child: pad(Row(
@@ -53,7 +53,7 @@ Future showPropertiesAccount(BuildContext context) async {
                           context,
                           MaterialPageRoute(
                               builder: (context) => const SettingsPage(
-                                  title: 'ULIST - Settings')),
+                                  title: 'cutelist - Settings')),
                         ).then((value) {});
                       },
                       child: pad(Row(
@@ -71,8 +71,8 @@ Future showPropertiesAccount(BuildContext context) async {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>
-                                  const SettingsPage(title: 'ULIST - login')),
+                              builder: (context) => const SettingsPage(
+                                  title: 'cutelist - login')),
                         ).then((value) {});
                       },
                       child: (pad(Row(
@@ -102,7 +102,7 @@ Future showPropertiesAccount(BuildContext context) async {
                       context,
                       MaterialPageRoute(
                           builder: (context) =>
-                              const AccountPage(title: 'ULIST - login')),
+                              const AccountPage(title: 'cutelist - login')),
                     ).then((value) {});
                   },
                   child: Text("source code"),
@@ -113,7 +113,7 @@ Future showPropertiesAccount(BuildContext context) async {
                       context,
                       MaterialPageRoute(
                           builder: (context) =>
-                              const AccountPage(title: 'ULIST - login')),
+                              const AccountPage(title: 'cutelist - login')),
                     ).then((value) {});
                   },
                   child: Text("changelog"),

@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:ulist/components/list_tag.dart';
-import 'package:ulist/list.dart';
-import 'package:ulist/services.dart';
-import 'package:ulist/settings.dart';
-import 'package:ulist/utils.dart';
+import 'package:cutelist/components/list_tag.dart';
+import 'package:cutelist/list.dart';
+import 'package:cutelist/services.dart';
+import 'package:cutelist/settings.dart';
+import 'package:cutelist/utils.dart';
 
 class ListEntry extends StatefulWidget {
   const ListEntry(
@@ -15,7 +15,8 @@ class ListEntry extends StatefulWidget {
       required this.entry,
       this.onChanged = null});
 
-  final void Function(ShoppingListEntry entry, int id, bool slide, bool removed)? onChanged;
+  final void Function(
+      ShoppingListEntry entry, int id, bool slide, bool removed)? onChanged;
   // This widget is the home page of your application. It is stateful, meaning
   // that it has a State object (defined below) that contains fields that affect
   // how it looks.
@@ -221,38 +222,36 @@ class _ListEntry extends State<ListEntry> with SingleTickerProviderStateMixin {
                                 children: tags_widgets,
                               )
                             : Container(),
-                        (PopupMenuButton(
-
-								onSelected: (String v) {
-
-
-									if(v == "remove") {
-									 widget.onChanged!(
-                                      widget.entry, widget.id, false, true);
-                            
-
-									}
-							      
-
-								},
-								itemBuilder: (BuildContext context) {
+                        (PopupMenuButton(onSelected: (String v) {
+                          if (v == "remove") {
+                            widget.onChanged!(
+                                widget.entry, widget.id, false, true);
+                          }
+                        }, itemBuilder: (BuildContext context) {
                           var result = <PopupMenuEntry<String>>[];
 
                           result.add(PopupMenuItem<String>(
                             value: "tag",
-                            child: Row(children: [ padx(Icon(Icons.brush), factor: 0.2), padx(Text("tag"), factor: 0.2)]),
+                            child: Row(children: [
+                              padx(Icon(Icons.brush), factor: 0.2),
+                              padx(Text("tag"), factor: 0.2)
+                            ]),
                           ));
-
 
                           result.add(PopupMenuItem<String>(
                             value: "rename",
-                            child: Row(children: [ padx(Icon(Icons.edit), factor: 0.2), padx(Text("rename"), factor: 0.2)]),
+                            child: Row(children: [
+                              padx(Icon(Icons.edit), factor: 0.2),
+                              padx(Text("rename"), factor: 0.2)
+                            ]),
                           ));
-
 
                           result.add(PopupMenuItem<String>(
                             value: "remove",
-                            child: Row(children: [ padx(Icon(Icons.delete), factor: 0.2), padx(Text("remove"), factor: 0.2)]),
+                            child: Row(children: [
+                              padx(Icon(Icons.delete), factor: 0.2),
+                              padx(Text("remove"), factor: 0.2)
+                            ]),
                           ));
                           return result;
                         }))

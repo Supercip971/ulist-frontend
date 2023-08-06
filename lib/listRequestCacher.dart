@@ -1,6 +1,6 @@
-import 'package:ulist/list.dart';
-import 'package:ulist/pocket_base.dart';
-import 'package:ulist/services.dart';
+import 'package:cutelist/list.dart';
+import 'package:cutelist/pocket_base.dart';
+import 'package:cutelist/services.dart';
 
 class ListCacheEntry {
   List<ShoppingListEntry> entries;

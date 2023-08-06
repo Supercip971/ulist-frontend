@@ -1,4 +1,4 @@
-package com.example.ulist
+package com.example.cutelist
 
 import io.flutter.embedding.android.FlutterActivity
 

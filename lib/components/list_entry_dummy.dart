@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:ulist/components/list_tag.dart';
-import 'package:ulist/list.dart';
-import 'package:ulist/services.dart';
-import 'package:ulist/settings.dart';
-import 'package:ulist/utils.dart';
+import 'package:cutelist/components/list_tag.dart';
+import 'package:cutelist/list.dart';
+import 'package:cutelist/services.dart';
+import 'package:cutelist/settings.dart';
+import 'package:cutelist/utils.dart';
 
 class DummyListEntry extends StatefulWidget {
   const DummyListEntry(
@@ -88,23 +88,17 @@ class _DummyListEntry extends State<DummyListEntry>
 
     last_value = widget.entry.checked;
 
-	List<String> tags = widget.entry.tags;
-	List<Widget> tags_widgets = [];
-	for (int i = 0; i < tags.length; i++) {
-		tags_widgets.add(
-			Padding(
-				padding: EdgeInsets.only(right: 4),
-				child: 
-					
-					ListTagButton(
-						name: tags[i],
-						callback: () {
-						},
-					),
-				    
-					)
-			);
-	}
+    List<String> tags = widget.entry.tags;
+    List<Widget> tags_widgets = [];
+    for (int i = 0; i < tags.length; i++) {
+      tags_widgets.add(Padding(
+        padding: EdgeInsets.only(right: 4),
+        child: ListTagButton(
+          name: tags[i],
+          callback: () {},
+        ),
+      ));
+    }
 /*               child: pad(
 					Row( 
 						mainAxisSize: MainAxisSize.max,
@@ -167,13 +161,13 @@ class _DummyListEntry extends State<DummyListEntry>
             surfaceTintColor: Theme.of(context).colorScheme.surfaceTint,
             elevation: (this.widget.entry.checked ? 0 : 2),
             child: pad(
-                	Row( 
-						mainAxisSize: MainAxisSize.max,
-						mainAxisAlignment: MainAxisAlignment.spaceBetween,
-						children: [
+                Row(
+                  mainAxisSize: MainAxisSize.max,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
                     Row(
                       mainAxisSize: MainAxisSize.min,
-					  mainAxisAlignment: MainAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: [
                         // :eyes: for later
                         //   RawMaterialButton(
@@ -186,8 +180,7 @@ class _DummyListEntry extends State<DummyListEntry>
                         //   ),
                         Checkbox(
                           value: widget.entry.checked,
-                          onChanged: (value) {
-                          },
+                          onChanged: (value) {},
                         ),
                         Flexible(
                             child: Column(
@@ -204,29 +197,25 @@ class _DummyListEntry extends State<DummyListEntry>
                                           : default_style))),
                               Text("user")
                             ])),
-						],),
-						Spacer(),
-						tags_widgets.length > 0 ?  Row(
-							children: tags_widgets,
-						)	 : Container(),
-
-
-						( PopupMenuButton(itemBuilder: (BuildContext context) {
-
-							var result = <PopupMenuEntry<String>>[];
-								result.add(
-									PopupMenuItem<String>(
-										value: "remove",
-										child: Text("remove"),
-									)
-								);
-
-							return result;
-						}))
-						
                       ],
                     ),
+                    Spacer(),
+                    tags_widgets.length > 0
+                        ? Row(
+                            children: tags_widgets,
+                          )
+                        : Container(),
+                    (PopupMenuButton(itemBuilder: (BuildContext context) {
+                      var result = <PopupMenuEntry<String>>[];
+                      result.add(PopupMenuItem<String>(
+                        value: "remove",
+                        child: Text("remove"),
+                      ));
 
+                      return result;
+                    }))
+                  ],
+                ),
                 factor: (widget.forceMode != null
                     ? widget.forceMode!
                     : (set.compactMode ? 0.5 : 1.0)))));

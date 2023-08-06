@@ -90,12 +90,12 @@ BEGIN
         BLOCK "040904e4"
         BEGIN
             VALUE "CompanyName", "com.example" "\0"
-            VALUE "FileDescription", "ulist" "\0"
+            VALUE "FileDescription", "cutelist" "\0"
             VALUE "FileVersion", VERSION_AS_STRING "\0"
-            VALUE "InternalName", "ulist" "\0"
+            VALUE "InternalName", "cutelist" "\0"
             VALUE "LegalCopyright", "Copyright (C) 2023 com.example. All rights reserved." "\0"
-            VALUE "OriginalFilename", "ulist.exe" "\0"
-            VALUE "ProductName", "ulist" "\0"
+            VALUE "OriginalFilename", "cutelist.exe" "\0"
+            VALUE "ProductName", "cutelist" "\0"
             VALUE "ProductVersion", VERSION_AS_STRING "\0"
         END
     END

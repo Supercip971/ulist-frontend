@@ -1,13 +1,13 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:ulist/pages/login_page.dart';
-import 'package:ulist/pocket_base.dart';
-import 'package:ulist/user.dart';
+import 'package:cutelist/pages/login_page.dart';
+import 'package:cutelist/pocket_base.dart';
+import 'package:cutelist/user.dart';
 import '../services.dart';
 import '../pocket_base.dart';
 
-import 'package:ulist/utils.dart';
+import 'package:cutelist/utils.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key, required this.title});
@@ -30,24 +30,23 @@ class AccountPage extends StatefulWidget {
 Widget proUserBadge(BuildContext context) {
   return padx(
       Material(
-		  elevation: 0.5,
-		  shape: RoundedRectangleBorder(
-			  borderRadius: BorderRadius.circular(69.0),
-			  side: BorderSide(
-				  color: Theme.of(context).colorScheme.surfaceTint,
-				  width: 1.0,
-			  )),
-
-		  color: Theme.of(context).colorScheme.surface,
+          elevation: 0.5,
+          shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(69.0),
+              side: BorderSide(
+                color: Theme.of(context).colorScheme.surfaceTint,
+                width: 1.0,
+              )),
+          color: Theme.of(context).colorScheme.surface,
           child: pad(
-			  xfactor: 1.0,
-			  yfactor: 0.2,
-			  Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [padx(Icon(Icons.diamond_outlined), factor: 0.1), (Text("PRO", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)))])
-			  )
-
-		  ),
+              xfactor: 1.0,
+              yfactor: 0.2,
+              Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
+                padx(Icon(Icons.diamond_outlined), factor: 0.1),
+                (Text("PRO",
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)))
+              ]))),
       factor: 1.5);
 }
 

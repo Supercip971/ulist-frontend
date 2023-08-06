@@ -1,17 +1,17 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:ulist/components/list_entry.dart';
-import 'package:ulist/components/list_entry_dummy.dart';
-import 'package:ulist/components/list_properties.dart';
-import 'package:ulist/list.dart';
-import 'package:ulist/listRequestCacher.dart';
-import 'package:ulist/pages/list_page.dart';
-import 'package:ulist/pages/register_page.dart';
-import 'package:ulist/pocket_base.dart';
+import 'package:cutelist/components/list_entry.dart';
+import 'package:cutelist/components/list_entry_dummy.dart';
+import 'package:cutelist/components/list_properties.dart';
+import 'package:cutelist/list.dart';
+import 'package:cutelist/listRequestCacher.dart';
+import 'package:cutelist/pages/list_page.dart';
+import 'package:cutelist/pages/register_page.dart';
+import 'package:cutelist/pocket_base.dart';
 import '../services.dart';
 import '../pocket_base.dart';
 
-import 'package:ulist/utils.dart';
+import 'package:cutelist/utils.dart';
 
 class DummyListPage extends StatefulWidget {
   const DummyListPage({super.key, this.list});

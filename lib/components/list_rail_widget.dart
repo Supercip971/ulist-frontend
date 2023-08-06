@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
-import 'package:ulist/components/list_lists.dart';
-import 'package:ulist/list.dart';
-import 'package:ulist/main.dart';
-import 'package:ulist/pages/list_properties.dart';
-import 'package:ulist/pages/login_page.dart';
-import 'package:ulist/pages/popups/invite-after.dart';
-import 'package:ulist/pages/popups/invite.dart';
-import 'package:ulist/pages/popups/join_list.dart';
-import 'package:ulist/pages/popups/new_list.dart';
-import 'package:ulist/pages/register_page.dart';
-import 'package:ulist/pocket_base.dart';
-import 'package:ulist/services.dart';
-import 'package:ulist/utils.dart';
+import 'package:cutelist/components/list_lists.dart';
+import 'package:cutelist/list.dart';
+import 'package:cutelist/main.dart';
+import 'package:cutelist/pages/list_properties.dart';
+import 'package:cutelist/pages/login_page.dart';
+import 'package:cutelist/pages/popups/invite-after.dart';
+import 'package:cutelist/pages/popups/invite.dart';
+import 'package:cutelist/pages/popups/join_list.dart';
+import 'package:cutelist/pages/popups/new_list.dart';
+import 'package:cutelist/pages/register_page.dart';
+import 'package:cutelist/pocket_base.dart';
+import 'package:cutelist/services.dart';
+import 'package:cutelist/utils.dart';
 
 class ListRailWidget extends StatefulWidget {
-  const ListRailWidget({Key? key,  required this.onSelect})
-      : super(key: key);
+  const ListRailWidget({Key? key, required this.onSelect}) : super(key: key);
 
   final Function onSelect;
   @override
@@ -36,7 +35,8 @@ class _ListRailWidget extends State<ListRailWidget> {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => const LoginPage(title: 'ULIST - login')),
+                builder: (context) =>
+                    const LoginPage(title: 'cutelist - login')),
           ).then((value) {
             setState(() {});
           });
@@ -63,10 +63,8 @@ class _ListRailWidget extends State<ListRailWidget> {
   }
 
   Widget listListBuilder(BuildContext context, AsyncSnapshot snapshot) {
- 
-	  return listListWidget(context, snapshot,null); 
+    return listListWidget(context, snapshot, null);
   }
-
 
   Widget get_lists(BuildContext context) {
     return Column(children: [

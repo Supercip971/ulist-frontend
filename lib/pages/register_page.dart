@@ -2,12 +2,12 @@ import 'dart:developer';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:ulist/pages/login_page.dart';
-import 'package:ulist/pocket_base.dart';
+import 'package:cutelist/pages/login_page.dart';
+import 'package:cutelist/pocket_base.dart';
 import '../services.dart';
 import '../pocket_base.dart';
 
-import 'package:ulist/utils.dart';
+import 'package:cutelist/utils.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key, required this.title});

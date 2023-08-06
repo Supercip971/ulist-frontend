@@ -3,14 +3,14 @@ import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:get_it/get_it.dart';
-import 'package:ulist/list.dart';
-import 'package:ulist/user.dart';
+import 'package:cutelist/list.dart';
+import 'package:cutelist/user.dart';
 import 'services.dart';
 
 import 'user.dart';
 
 // official backend
-//const pb_url = ("https://ulist-backend.cyp.sh/");
+//const pb_url = ("https://cutelist-backend.cyp.sh/");
 
 const pb_url = ("http://127.0.0.1:8090");
 PocketBase pb = PocketBase(pb_url);
@@ -310,17 +310,16 @@ class PocketBaseController {
     return response;
   }
 
-
   Future<ShoppingListInformation?> get_list_props(String id) async {
-	var result_list = await pb.send(
-	  "/api/v1/list-properties",
-	  method: "GET",
-	  query: {
-		"id": id,
-	  },
-	);
+    var result_list = await pb.send(
+      "/api/v1/list-properties",
+      method: "GET",
+      query: {
+        "id": id,
+      },
+    );
 
-	return ShoppingListInformation.fromJson(result_list);
+    return ShoppingListInformation.fromJson(result_list);
   }
 }
 

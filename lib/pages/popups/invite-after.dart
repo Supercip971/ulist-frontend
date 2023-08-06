@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:ulist/list.dart';
-import 'package:ulist/pages/account_page.dart';
-import 'package:ulist/pocket_base.dart';
-import 'package:ulist/services.dart';
-import 'package:ulist/utils.dart';
+import 'package:cutelist/list.dart';
+import 'package:cutelist/pages/account_page.dart';
+import 'package:cutelist/pocket_base.dart';
+import 'package:cutelist/services.dart';
+import 'package:cutelist/utils.dart';
 import 'package:share_plus/share_plus.dart';
 
 class ListInviteResult {

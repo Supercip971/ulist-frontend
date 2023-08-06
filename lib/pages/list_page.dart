@@ -2,19 +2,19 @@ import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:ulist/components/list_entry.dart';
-import 'package:ulist/components/list_properties.dart';
-import 'package:ulist/components/list_tag.dart';
-import 'package:ulist/list.dart';
-import 'package:ulist/listRequestCacher.dart';
-import 'package:ulist/pages/dummy_list_page.dart';
-import 'package:ulist/pages/popups/filter_popup.dart';
-import 'package:ulist/pages/register_page.dart';
-import 'package:ulist/pocket_base.dart';
+import 'package:cutelist/components/list_entry.dart';
+import 'package:cutelist/components/list_properties.dart';
+import 'package:cutelist/components/list_tag.dart';
+import 'package:cutelist/list.dart';
+import 'package:cutelist/listRequestCacher.dart';
+import 'package:cutelist/pages/dummy_list_page.dart';
+import 'package:cutelist/pages/popups/filter_popup.dart';
+import 'package:cutelist/pages/register_page.dart';
+import 'package:cutelist/pocket_base.dart';
 import '../services.dart';
 import '../pocket_base.dart';
 
-import 'package:ulist/utils.dart';
+import 'package:cutelist/utils.dart';
 
 class ListPage extends StatefulWidget {
   ListPage(
@@ -84,8 +84,7 @@ class _ListPage extends State<ListPage> {
   AnimatedListState animatedListState = AnimatedListState();
   bool dirty = true;
   bool loading = true;
-  Future<bool> upload_change(
-	  int place , bool delete_entry) async {
+  Future<bool> upload_change(int place, bool delete_entry) async {
     var pbc = getIt<PocketBaseController>();
     var entry = entries[place];
 
@@ -93,7 +92,7 @@ class _ListPage extends State<ListPage> {
     update.id = entries[place].uid;
     update.checked = entries[place].checked;
 
-	update.delete = delete_entry;
+    update.delete = delete_entry;
 
     update.name = entries[place].name;
 
@@ -193,19 +192,12 @@ class _ListPage extends State<ListPage> {
             id: i,
             entry: entries[i],
             onChanged: (new_entry, id, slide, remove) {
-		     var prev = entries[i];
+              var prev = entries[i];
 
-              upload_change( 
-				  i,
-				  remove
-			  );
+              upload_change(i, remove);
 
-
-				if(remove)
-				{
-
-
-				 _key.currentState!.removeItem(
+              if (remove) {
+                _key.currentState!.removeItem(
                     id,
                     (context, animation) => SizeTransition(
                         sizeFactor: animation,
@@ -220,54 +212,49 @@ class _ListPage extends State<ListPage> {
                               onChanged: (entry, id, swipe, removed) {},
                             ))),
                     duration: const Duration(milliseconds: 300));
-              
-
-				}
-				else {
-
-              entries[i].checked = new_entry.checked;
-
-
-              if (slide) {
-                _key.currentState!.removeItem(
-                    id,
-                    (context, animation) => SizeTransition(
-                        sizeFactor: animation,
-                        child: SlideTransition(
-                            position: Tween<Offset>(
-                              begin: const Offset(10, 0),
-                              end: const Offset(10, 0),
-                            ).animate(animation),
-                            child: ListEntry(
-                              id: i,
-                              entry: prev,
-                              onChanged: (entry, id, swipe, removed) {},
-                            ))),
-                    duration: const Duration(milliseconds: 300));
               } else {
-                _key.currentState!.removeItem(
-                    id,
-                    (context, animation) => SizeTransition(
-                        sizeFactor: animation,
-                        child: SlideTransition(
-                            position: Tween<Offset>(
-                              begin: const Offset(1, 0),
-                              end: Offset(0, 0),
-                            ).animate(animation),
-                            child: ListEntry(
-                              id: i,
-                              entry: prev,
-                              onChanged: (entry, id, swipe, removed) {},
-                            ))),
-                    duration: const Duration(milliseconds: 300));
+                entries[i].checked = new_entry.checked;
+
+                if (slide) {
+                  _key.currentState!.removeItem(
+                      id,
+                      (context, animation) => SizeTransition(
+                          sizeFactor: animation,
+                          child: SlideTransition(
+                              position: Tween<Offset>(
+                                begin: const Offset(10, 0),
+                                end: const Offset(10, 0),
+                              ).animate(animation),
+                              child: ListEntry(
+                                id: i,
+                                entry: prev,
+                                onChanged: (entry, id, swipe, removed) {},
+                              ))),
+                      duration: const Duration(milliseconds: 300));
+                } else {
+                  _key.currentState!.removeItem(
+                      id,
+                      (context, animation) => SizeTransition(
+                          sizeFactor: animation,
+                          child: SlideTransition(
+                              position: Tween<Offset>(
+                                begin: const Offset(1, 0),
+                                end: Offset(0, 0),
+                              ).animate(animation),
+                              child: ListEntry(
+                                id: i,
+                                entry: prev,
+                                onChanged: (entry, id, swipe, removed) {},
+                              ))),
+                      duration: const Duration(milliseconds: 300));
+                }
+
+                _key.currentState!
+                    .insertItem(i, duration: const Duration(milliseconds: 0));
+
+                // entries.removeAt(i);
+                //  entries.add(new_entry);
               }
-
-              _key.currentState!
-                  .insertItem(i, duration: const Duration(milliseconds: 0));
-
-              // entries.removeAt(i);
-              //  entries.add(new_entry);
-				}
               setState(() {});
             }));
       } else {
@@ -306,7 +293,6 @@ class _ListPage extends State<ListPage> {
     );
   }
 
-
   List<String> selected_tag = [];
 
   bool showTags = false;
@@ -319,25 +305,25 @@ class _ListPage extends State<ListPage> {
 
     List<Widget> editing_tags_widget = [];
 
-	for(var tag in self.tags){
-		editing_tags_widget.add(
-			padx(ListTagButton(name: tag,
-			    highlighted: selected_tag.contains(tag),
-				callback: () => {
+    for (var tag in self.tags) {
+      editing_tags_widget.add(padx(
+          ListTagButton(
+              name: tag,
+              highlighted: selected_tag.contains(tag),
+              callback: () => {
+                    setState(() {
+                      if (selected_tag.contains(tag)) {
+                        selected_tag.remove(tag);
+                      } else {
+                        selected_tag.add(tag);
+                      }
+                    })
+                  }),
+          factor: 0.5));
+    }
 
-				setState(() {
-					if(selected_tag.contains(tag)){
-						selected_tag.remove(tag);
-					}
-					else{
-						selected_tag.add(tag);
-					}
-				})
-			}), factor: 0.5));
-	}
-
-	editing_tags_widget.add(IconButton.outlined(onPressed: (){}, icon: Icon(Icons.add) ));
-
+    editing_tags_widget
+        .add(IconButton.outlined(onPressed: () {}, icon: Icon(Icons.add)));
 
     var pbc = getIt<PocketBaseController>();
 
@@ -381,21 +367,24 @@ class _ListPage extends State<ListPage> {
               pad(Column(children: [
                 /* tag row */
 
-			   showTags ? Row(children: editing_tags_widget) : Container(),
-			    
+                showTags ? Row(children: editing_tags_widget) : Container(),
+
                 /* editing row */
                 Row(
                   mainAxisSize: MainAxisSize.max,
                   children: [
-					
-
-					showTags ? IconButton.filled(onPressed: () => {
-						setState(() => { showTags = !showTags })
-					}, icon: Icon(Icons.local_offer)) :  IconButton.outlined(onPressed: () => {
-						setState(() => { showTags = !showTags })
-					}, icon: Icon(Icons.local_offer)) ,
-
-                   Flexible(
+                    showTags
+                        ? IconButton.filled(
+                            onPressed: () => {
+                                  setState(() => {showTags = !showTags})
+                                },
+                            icon: Icon(Icons.local_offer))
+                        : IconButton.outlined(
+                            onPressed: () => {
+                                  setState(() => {showTags = !showTags})
+                                },
+                            icon: Icon(Icons.local_offer)),
+                    Flexible(
                       child: Container(
                         child: padx(TextField(
                           controller: addedName,
@@ -406,7 +395,6 @@ class _ListPage extends State<ListPage> {
                     FloatingActionButton(
                         onPressed: () {
                           ShoppingListEntryPush entry = ShoppingListEntryPush();
-
 
                           String temp_uid =
                               Random().nextInt(1000000).toString();
@@ -419,9 +407,9 @@ class _ListPage extends State<ListPage> {
                           entry.checked = false;
                           entry.name = addedName.text;
 
-						  if(showTags){
-							  // FIXME: entry.tags = selected_tag;
-						  }
+                          if (showTags) {
+                            // FIXME: entry.tags = selected_tag;
+                          }
 
                           entries.add(final_entry);
 

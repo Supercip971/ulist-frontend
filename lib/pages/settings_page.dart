@@ -3,15 +3,15 @@ import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
-import 'package:ulist/components/list_entry_dummy.dart';
-import 'package:ulist/list.dart';
-import 'package:ulist/pages/register_page.dart';
-import 'package:ulist/pocket_base.dart';
-import 'package:ulist/settings.dart';
+import 'package:cutelist/components/list_entry_dummy.dart';
+import 'package:cutelist/list.dart';
+import 'package:cutelist/pages/register_page.dart';
+import 'package:cutelist/pocket_base.dart';
+import 'package:cutelist/settings.dart';
 import '../services.dart';
 import '../pocket_base.dart';
 
-import 'package:ulist/utils.dart';
+import 'package:cutelist/utils.dart';
 
 class SettingsCompactView extends StatefulWidget {
   const SettingsCompactView({super.key, required this.height});
